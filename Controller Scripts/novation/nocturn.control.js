@@ -10,38 +10,38 @@ var states = { 20: 0, 21: 0, 22: 0, 23: 0, 24: 0, 25: 0, 26: 0, 27: 0 };
 
 var MODE_PAGE =
 {
-	MIXER : 0,
-	DEVICE : 1
+    MIXER: 0,
+    DEVICE: 1
 };
 
 var CC_ENCODER =
-[
-	20,
-    21,
-    22,
-    23,
-    24,
-    25,
-    26,
-    27
-];
+    [
+        20,
+        21,
+        22,
+        23,
+        24,
+        25,
+        26,
+        27
+    ];
 
 var CC_FADER =
-[
-    28
-];
+    [
+        28
+    ];
 
 var CC_BUTTON =
-[
-	30,
-    31,
-    32,
-    33,
-    34,
-    35,
-    36,
-    37
-];
+    [
+        30,
+        31,
+        32,
+        33,
+        34,
+        35,
+        36,
+        37
+    ];
 
 var current_page = MODE_PAGE.MIXER
 
@@ -84,7 +84,7 @@ function init() {
     /* CURSOR DEVICE */
     cursorDevice = host.createCursorDeviceSection(8);
     cursorDevice.addSelectedPageObserver(0, function (page) {
-      //  println("page: " + page );
+        //  println("page: " + page );
     });
     primaryInstrument = cursorTrack.getPrimaryInstrument();
     for (var p = 0; p < 8; p++) {
@@ -112,7 +112,7 @@ function flush() {
     //println("page " + current_page );
     for (var key in states) {
         //pausecomp(200);
-    
+
         //println("flush() key: " + key + " states[key]: " + states[key]);
 
         sendChannelController(0, key, states[key]);
@@ -137,7 +137,7 @@ function onMidi(status, data1, data2) {
     else if (CC_BUTTON.indexOf(data1) > -1) {
         println("onMidi() CC_BUTTON.data1: " + CC_BUTTON.indexOf(data1));
         println("onMidi() button data");
-        current_page=CC_BUTTON.indexOf(data1);
+        current_page = CC_BUTTON.indexOf(data1);
         for (var key in CC_BUTTON) {
             states[CC_BUTTON[key]] = 0;
         }
