@@ -8,7 +8,8 @@ host.addDeviceNameBasedDiscoveryPair(["Automap MIDI"], ["Automap MIDI"]);
 const MODE_PAGE =
 {
     MIXER: 0,
-    DEVICE: 1
+    DEVICE: 1,
+    XFADE: 2
 };
 
 const CC_ENCODER =
@@ -72,6 +73,13 @@ function init() {
 
     trackBank = host.createTrackBank(8, 2, 0);
 
+    println("crossfade: " + transport.crossfade)
+
+    transport.crossfade.addValueObserver(128,  function (value) {
+        println("Volume: CROSSFADE : value: " + value);
+        page_states[MODE_PAGE.MIXER][28] = value;
+    });
+
     /* TRACK BANK */
     for (var t = 0; t < 8; t++) {
         var track = trackBank.getTrack(t);
@@ -118,9 +126,7 @@ function flush() {
         //pausecomp(200);
         //println("flush() key: " + key + " states[key]: " + states[key]);
         sendChannelController(0, key, page_states[current_page][key]);
-
     }
-
 }
 
 function onMidi(status, data1, data2) {
@@ -138,7 +144,7 @@ function onMidi(status, data1, data2) {
     else if (CC_FADER.indexOf(data1) > -1) {
         println("onMidi() CC_FADER.data1: " + CC_FADER.indexOf(data1));
         println("onMidi() fader data");
-
+        transport.crossfade.set(data2, 128);
     }
     else if (CC_BUTTON.indexOf(data1) > -1) {
         println("onMidi() CC_BUTTON.data1: " + CC_BUTTON.indexOf(data1));
