@@ -83,7 +83,7 @@ function init() {
     /* TRACK BANK */
     for (var t = 0; t < 8; t++) {
         var track = trackBank.getTrack(t);
-
+        track.getVolume().setIndication(true);
         track.getVolume().addValueObserver(128, makeIndexedFunction(t, function (index, value) {
             println("Volume: track: " + index + " value: " + value);
             page_states[MODE_PAGE.MIXER][20 + index] = value;
@@ -149,13 +149,20 @@ function onMidi(status, data1, data2) {
     else if (CC_BUTTON.indexOf(data1) > -1) {
         println("onMidi() CC_BUTTON.data1: " + CC_BUTTON.indexOf(data1));
         println("onMidi() button data");
+        if (current_page == MODE_PAGE.MIXER) {
+            trackBank.setIndication = true;
+
+            //println("onMidi() button data: scrollTracksUp");
+            //trackBank.scrollTracksUp();
+            println("onMidi() button data: scrollTracksDown");
+            trackBank.scrollTracksDown();
+        }
         current_page = CC_BUTTON.indexOf(data1);
         for (var key in CC_BUTTON) {
             page_states[current_page][CC_BUTTON[key]] = 0;
 
         }
     }
-
     page_states[current_page][data1] = data2;
 }
 
