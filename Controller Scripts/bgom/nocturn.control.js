@@ -9,7 +9,8 @@ const MODE_PAGE =
 {
     MIXER: 0,
     DEVICE: 1,
-    XFADE: 2
+    XFADE: 2,
+    VUMETER: 3
 };
 
 const CC_ENCODER =
@@ -83,6 +84,13 @@ function init() {
     /* TRACK BANK */
     for (var t = 0; t < 8; t++) {
         var track = trackBank.getTrack(t);
+
+        track.addVuMeterObserver(128, -1, true, makeIndexedFunction(t, function (index, value) 
+		{
+            if (current_page == MODE_PAGE.VUMETER)
+              page_states[MODE_PAGE.VUMETER][20 + index] = value;
+            }));
+
         track.getVolume().setIndication(true);
         track.getVolume().addValueObserver(128, makeIndexedFunction(t, function (index, value) {
             println("Volume: track: " + index + " value: " + value);
@@ -119,6 +127,14 @@ function pausecomp(millis) {
     while (curDate - date < millis);
 }
 
+function clear_encoder_leds() {
+    CC_ENCODER
+    for (var cc in CC_ENCODER) {
+        //pausecomp(200);
+        //println("flush() key: " + key + " states[key]: " + states[key]);
+        sendChannelController(0, cc, 0);
+    }
+}
 function flush() {
     var index;
     //println("page " + current_page );
@@ -147,7 +163,10 @@ function onMidi(status, data1, data2) {
         transport.crossfade.set(data2, 128);
     }
     else if (CC_BUTTON.indexOf(data1) > -1) {
-        println("onMidi() CC_BUTTON.data1: " + CC_BUTTON.indexOf(data1));
+        if (CC_BUTTON.indexOf(data1) != current_page)
+            clear_encoder_leds
+     
+            println("onMidi() CC_BUTTON.data1: " + CC_BUTTON.indexOf(data1));
         println("onMidi() button data");
         if (current_page == MODE_PAGE.MIXER) {
             trackBank.setIndication = true;
