@@ -72,7 +72,9 @@ function init() {
         println(isPlaying ? "PLAY" : "STOP");
     });
 
-    trackBank = host.createTrackBank(8, 2, 0);
+    //trackBank = host.createTrackBank(8, 2, 0);
+    trackBank = host.createMainTrackBank(8, 0, 0);
+    
 
     println("crossfade: " + transport.crossfade)
 
