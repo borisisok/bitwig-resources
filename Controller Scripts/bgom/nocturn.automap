@@ -2,7 +2,7 @@
 <AutomapFile>
     <PlugID PlugID="722721511" PlugID3="1444606871" PlugID2="1141333638" PlugID1="1578595161" />
     <DeviceID DeviceID="-1215975765" DeviceID3="-1866063922" DeviceID2="1129091659" DeviceID1="-463121537" />
-    <Type Type="0" />
+    <Type Type="1" />
     <BrowserHint Value="1" />
     <Group name="Controls">
         <Group name="Page 1 Encoders">
@@ -29,27 +29,27 @@
             <Param name="CC# 28" shortName="CC# 28" id="28" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
         </Group>
         <Group name="Page 1 Sliders">
-            <Param name="CC# 49" shortName="MIDI Learn 1" id="49" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
-            <Param name="CC# 50" shortName="MIDI Learn 2" id="50" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
-            <Param name="CC# 51" shortName="MIDI Learn 3" id="51" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
-            <Param name="CC# 52" shortName="MIDI Learn 4" id="52" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
-            <Param name="CC# 53" shortName="MIDI Learn 5" id="53" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
-            <Param name="CC# 54" shortName="MIDI Learn 6" id="54" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
-            <Param name="CC# 55" shortName="MIDI Learn 7" id="55" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
-            <Param name="CC# 56" shortName="MIDI Learn 8" id="56" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
+            <Param name="CC# 20" shortName="CC# 20" id="20" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
+            <Param name="CC# 21" shortName="CC# 21" id="21" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
+            <Param name="CC# 22" shortName="CC# 22" id="22" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
+            <Param name="CC# 23" shortName="CC# 23" id="23" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
+            <Param name="CC# 24" shortName="CC# 24" id="24" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
+            <Param name="CC# 25" shortName="CC# 25" id="25" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
+            <Param name="CC# 26" shortName="CC# 26" id="26" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
+            <Param name="CC# 27" shortName="CC# 27" id="27" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
         </Group>
         <Group name="Page 1 Encoder Buttons">
-            <Param name="CC# 57" shortName="MIDI Learn B1" id="57" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
-            <Param name="CC# 58" shortName="MIDI Learn B2" id="58" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
-            <Param name="CC# 59" shortName="MIDI Learn B3" id="59" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
-            <Param name="CC# 60" shortName="MIDI Learn B4" id="60" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
-            <Param name="CC# 61" shortName="MIDI Learn B5" id="61" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
-            <Param name="CC# 62" shortName="MIDI Learn B6" id="62" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
-            <Param name="CC# 63" shortName="MIDI Learn B7" id="63" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
-            <Param name="CC# 64" shortName="MIDI Learn B8" id="64" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
+            <Param name="CC# 30" shortName="CC# 30" id="30" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
+            <Param name="CC# 31" shortName="CC# 31" id="31" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
+            <Param name="CC# 32" shortName="CC# 32" id="32" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
+            <Param name="CC# 33" shortName="CC# 33" id="33" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
+            <Param name="CC# 34" shortName="CC# 34" id="34" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
+            <Param name="CC# 35" shortName="CC# 35" id="35" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
+            <Param name="CC# 36" shortName="CC# 36" id="36" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
+            <Param name="CC# 37" shortName="CC# 37" id="37" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
         </Group>
         <Group name="Page 1 XFader">
-            <Param name="CC# 65" shortName="CrossFade" id="65" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
+            <Param name="CC# 28" shortName="CC# 28" id="28" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
         </Group>
         <Group name="Page 1 Pot Buttons">
             <Param />
@@ -72,6 +72,29 @@
             <Param />
         </Group>
         <Group name="Page 1 XFader">
+            <Param />
+        </Group>
+        <Group name="Page 2 Encoders">
+            <Param />
+            <Param />
+            <Param />
+            <Param />
+            <Param />
+            <Param />
+            <Param />
+            <Param />
+        </Group>
+        <Group name="Page 2 Pots">
+            <Param />
+            <Param />
+            <Param />
+            <Param />
+            <Param />
+            <Param />
+            <Param />
+            <Param />
+        </Group>
+        <Group name="Page 2 XFader">
             <Param />
         </Group>
     </Group>
