@@ -55,7 +55,7 @@ var nocturns = [
 
 function createState() {
     return {
-        current_page: MODE_PAGE.VUMETER,
+        current_page: MODE_PAGE.MIXER,
         states: [
             [0, 0, 0, 0, 0, 0, 0, 0, 127, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 0, 0, 0, 0, 0, 0, 0],
@@ -89,10 +89,11 @@ function init() {
 
         track.addVuMeterObserver(128, -1, true, makeIndexedFunction(t, function (index, value) 
 		{
-            if (current_page == MODE_PAGE.VUMETER)
-                n = Math.floor(index / CC_ENCODER.length)
+            if (current_page == MODE_PAGE.VUMETER) {
+                var n = Math.floor(index / CC_ENCODER.length)
                 cc = index - (CC_ENCODER.length * n)
                 nocturns[n]['states'][MODE_PAGE.VUMETER][cc] = value
+            }
             }));
 
 
@@ -153,22 +154,41 @@ function onMidi(status, data1, data2) {
     n = Math.floor(data1 / CC_NUM)
     println("nocturn num: " + n);
 
-    if (current_page == MODE_PAGE.MIXER)
+    if (current_page == MODE_PAGE.MIXER) {
         println ("l: " + ((n * CC_NUM) + CC_ENCODER[0]))
         println ("u: " + ((n * CC_NUM) + CC_ENCODER[7]))
         
-        if (data1 >= ((n * CC_NUM) + CC_ENCODER[0]) ) 
-            if (data1 <= ((n * CC_NUM) + CC_ENCODER[7]))
+        if (data1 >= ((n * CC_NUM) + CC_ENCODER[0]) ) {
+            if (data1 <= ((n * CC_NUM) + CC_ENCODER[7])) {
+                e = data1 - (n * CC_NUM) 
+                t = ( e + (n * CC_ENCODER.length) ) 
                 println("YO I AM ENCODER ")
-
-        else if (data1 == ((n * CC_NUM) + CC_FADER[0]) ) 
+                onEncoder(n, e, t, data1, data2)
+            }
+        }
+        else if (data1 == ((n * CC_NUM) + CC_FADER[0]) ) { 
             println("YO I AM FADER ")
-    
-        else if (data1 >= ((n * CC_NUM) + CC_BUTTON[0]) ) 
-            if (data1 <= ((n * CC_NUM) + CC_BUTTON[7]))
+        }
+        else if (data1 >= ((n * CC_NUM) + CC_BUTTON[0]) ) {
+            if (data1 <= ((n * CC_NUM) + CC_BUTTON[7])) {
                 println("YO I AM BUTTON ")
-
+            }
+        }
+     }
 }
+
+
+function onEncoder(nocturn_num, encoder_num, track_num, data1, data2){
+    println("I HANDLE ENCODER track: " + track_num + " enc: " + encoder_num)
+
+    if (current_page == MODE_PAGE.MIXER) {
+        track = trackBank.getTrack(track_num)
+        if (track) {
+            track.getVolume().set(data2, 128);
+        }
+    }
+}
+
 
 function onSysex(data) {
 }
