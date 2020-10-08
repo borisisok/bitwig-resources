@@ -55,7 +55,7 @@ var nocturns = [
 
 function createState() {
     return {
-        current_page: MODE_PAGE.MIXER,
+        current_page: MODE_PAGE.VUMETER,
         states: [
             [0, 0, 0, 0, 0, 0, 0, 0, 127, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 0, 0, 0, 0, 0, 0, 0],
@@ -86,6 +86,15 @@ function init() {
     /* TRACK BANK */
     for (var t = 0; t < 32; t++) {
         var track = trackBank.getTrack(t);
+
+        track.addVuMeterObserver(128, -1, true, makeIndexedFunction(t, function (index, value) 
+		{
+            if (current_page == MODE_PAGE.VUMETER)
+                n = Math.floor(index / CC_ENCODER.length)
+                cc = index - (CC_ENCODER.length * n)
+                nocturns[n]['states'][MODE_PAGE.VUMETER][cc] = value
+            }));
+
 
         track.getVolume().addValueObserver(128, makeIndexedFunction(t, function (index, value) {
             println("Volume: track: " + index + " value: " + value);
@@ -153,11 +162,11 @@ function onMidi(status, data1, data2) {
                 println("YO I AM ENCODER ")
 
         else if (data1 == ((n * CC_NUM) + CC_FADER[0]) ) 
-             println("YO I AM FADER ")
+            println("YO I AM FADER ")
     
         else if (data1 >= ((n * CC_NUM) + CC_BUTTON[0]) ) 
             if (data1 <= ((n * CC_NUM) + CC_BUTTON[7]))
-            println("YO I AM BUTTON ")
+                println("YO I AM BUTTON ")
 
 }
 
