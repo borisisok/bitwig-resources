@@ -108,8 +108,19 @@ function init() {
     /* CURSOR DEVICE */
     cursorDevice = host.createCursorDeviceSection(8);
     cursorDevice.addSelectedPageObserver(0, function (page) {
-        //  println("page: " + page );
+          println("SelectedPageObserver page: " + page );
     });
+
+    // TODO: checkout API of
+    //           CursorDeviceFollowMode 
+    //           CursorRemoteControlsPage
+    // steal code from:
+    //    nektar/SE49_v2.control.js:
+
+    // deviceChain.scrollTo(index); b = deviceChain.getDevice(index); b === primaryInstrument
+
+    // availableParameterPages
+
     primaryInstrument = cursorTrack.getPrimaryInstrument();
     for (var p = 0; p < 8; p++) {
         var macro = primaryInstrument.getMacro(p).getAmount();
@@ -169,7 +180,7 @@ function onMidi(status, data1, data2) {
             clear_encoder_leds
      
             println("onMidi() CC_BUTTON.data1: " + CC_BUTTON.indexOf(data1));
-        println("onMidi() button data");
+            println("onMidi() button data");
         if (current_page == MODE_PAGE.MIXER) {
             trackBank.setIndication = true;
 
@@ -177,12 +188,17 @@ function onMidi(status, data1, data2) {
             //trackBank.scrollTracksUp();
             println("onMidi() button data: scrollTracksDown");
             trackBank.scrollTracksDown();
+        } else if (current_page == MODE_PAGE.DEVICE) {
+            //cursorDevice.switchToPreviousPreset(); 
+            cursorDevice.switchToNextPreset();
+            println("switchToNextPreset()" + cursorDevice);
         }
         current_page = CC_BUTTON.indexOf(data1);
         for (var key in CC_BUTTON) {
             page_states[current_page][CC_BUTTON[key]] = 0;
 
         }
+        data2 = 127
     }
     page_states[current_page][data1] = data2;
 }
