@@ -55,7 +55,7 @@ var nocturns = [
 
 function createState() {
     return {
-        current_page : MODE_PAGE.MIXER,
+        current_page: MODE_PAGE.MIXER,
         states: [
             [0, 0, 0, 0, 0, 0, 0, 0, 127, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 0, 0, 0, 0, 0, 0, 0],
@@ -121,17 +121,17 @@ function pausecomp(millis) {
 
 function flush() {
     for (var i in nocturns) {
-        println("flush() ---------------------------------" );
+        //println("flush() ---------------------------------" );
 
-        println("flush() item: " + i);
-        println("flush() item cs: " + nocturns[i]['current_page']);
-        
+        //println("flush() item: " + i);
+        //println("flush() item cs: " + nocturns[i]['current_page']);
+
         for (var state in nocturns[i]['states'][nocturns[i]['current_page']]) {
-            println("flush() stat: " + state);
-            println("flush() val: " + nocturns[i]['states'][nocturns[i]['current_page']][state]);
+            //println("flush() stat: " + state);
+            //println("flush() val: " + nocturns[i]['states'][nocturns[i]['current_page']][state]);
             val = nocturns[i]['states'][nocturns[i]['current_page']][state]
-            cc =  +state + ( +i * CC_NUM ) 
-            println("flush() cc: " + cc);
+            cc = +state + (+i * CC_NUM)
+            //println("flush() cc: " + cc);
             sendChannelController(0, cc, val);
         }
 
@@ -140,6 +140,25 @@ function flush() {
 
 function onMidi(status, data1, data2) {
     println("onMidi() status: " + status + " data1: " + data1 + " data2: " + data2);
+    // which nocturn number is the source
+    n = Math.floor(data1 / CC_NUM)
+    println("nocturn num: " + n);
+
+    if (current_page == MODE_PAGE.MIXER)
+        println ("l: " + ((n * CC_NUM) + CC_ENCODER[0]))
+        println ("u: " + ((n * CC_NUM) + CC_ENCODER[7]))
+        
+        if (data1 >= ((n * CC_NUM) + CC_ENCODER[0]) ) 
+            if (data1 <= ((n * CC_NUM) + CC_ENCODER[7]))
+                println("YO I AM ENCODER ")
+
+        else if (data1 == ((n * CC_NUM) + CC_FADER[0]) ) 
+             println("YO I AM FADER ")
+    
+        else if (data1 >= ((n * CC_NUM) + CC_BUTTON[0]) ) 
+            if (data1 <= ((n * CC_NUM) + CC_BUTTON[7]))
+            println("YO I AM BUTTON ")
+
 }
 
 function onSysex(data) {
