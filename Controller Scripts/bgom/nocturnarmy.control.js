@@ -157,22 +157,23 @@ function onMidi(status, data1, data2) {
     if (current_page == MODE_PAGE.MIXER) {
         println ("l: " + ((n * CC_NUM) + CC_ENCODER[0]))
         println ("u: " + ((n * CC_NUM) + CC_ENCODER[7]))
+
+        println ("F: " + ((n * CC_NUM) + CC_FADER[0]))
+
+        println ("l: " + ((n * CC_NUM) + CC_BUTTON[0]))
+        println ("u: " + ((n * CC_NUM) + CC_BUTTON[7]))
         
-        if (data1 >= ((n * CC_NUM) + CC_ENCODER[0]) ) {
-            if (data1 <= ((n * CC_NUM) + CC_ENCODER[7])) {
+        if (data1 >= ((n * CC_NUM) + CC_ENCODER[0]) && data1 <= ((n * CC_NUM) + CC_ENCODER[7])) {
                 e = data1 - (n * CC_NUM) 
                 t = ( e + (n * CC_ENCODER.length) ) 
                 println("YO I AM ENCODER ")
                 onEncoder(n, e, t, data1, data2)
-            }
         }
         else if (data1 == ((n * CC_NUM) + CC_FADER[0]) ) { 
             println("YO I AM FADER ")
         }
-        else if (data1 >= ((n * CC_NUM) + CC_BUTTON[0]) ) {
-            if (data1 <= ((n * CC_NUM) + CC_BUTTON[7])) {
-                println("YO I AM BUTTON ")
-            }
+        else if (data1 >= ((n * CC_NUM) + CC_BUTTON[0]) && data1 <= ((n * CC_NUM) + CC_BUTTON[7])) {
+            println("YO I AM BUTTON ")
         }
      }
 }
