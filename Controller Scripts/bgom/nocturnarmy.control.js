@@ -181,10 +181,6 @@ function onEncoder(nocturn_num, encoder_num, track_num, data1, data2){
 function onButton(nocturn_num, botton_num, track_num, data1, data2){
     println("onButton: " + nocturn_num + " " + botton_num + " " + track_num + " " + data1 + " " + data2)
     if (current_page == MODE_PAGE.MIXER) {
-        track = trackBank.getTrack(track_num)
-        if (track) {
-            track.getVolume().set(data2, 128);
-        }
     }
 }
 
