@@ -1,4 +1,6 @@
-
+/*
+ * cd /cygdrive/c/Users/gomol/Documents/Bitwig\ Studio/Controller\ Scripts/bgom/
+ */
 loadAPI(1);
 
 host.defineController("bgom", "Automap army of MIDI Nocturns", "1.0", "DCA77860-FDCC-11EA-8B6E-0800200C9A66");
@@ -131,17 +133,9 @@ function pausecomp(millis) {
 
 function flush() {
     for (var i in nocturns) {
-        //println("flush() ---------------------------------" );
-
-        //println("flush() item: " + i);
-        //println("flush() item cs: " + nocturns[i]['current_page']);
-
         for (var state in nocturns[i]['states'][nocturns[i]['current_page']]) {
-            //println("flush() stat: " + state);
-            //println("flush() val: " + nocturns[i]['states'][nocturns[i]['current_page']][state]);
             val = nocturns[i]['states'][nocturns[i]['current_page']][state]
             cc = +state + (+i * CC_NUM)
-            //println("flush() cc: " + cc);
             sendChannelController(0, cc, val);
         }
 
@@ -155,33 +149,27 @@ function onMidi(status, data1, data2) {
     println("nocturn num: " + n);
 
     if (current_page == MODE_PAGE.MIXER) {
-        println ("l: " + ((n * CC_NUM) + CC_ENCODER[0]))
-        println ("u: " + ((n * CC_NUM) + CC_ENCODER[7]))
-
-        println ("F: " + ((n * CC_NUM) + CC_FADER[0]))
-
-        println ("l: " + ((n * CC_NUM) + CC_BUTTON[0]))
-        println ("u: " + ((n * CC_NUM) + CC_BUTTON[7]))
-        
         if (data1 >= ((n * CC_NUM) + CC_ENCODER[0]) && data1 <= ((n * CC_NUM) + CC_ENCODER[7])) {
                 e = data1 - (n * CC_NUM) 
                 t = ( e + (n * CC_ENCODER.length) ) 
-                println("YO I AM ENCODER ")
+                println("YO I AM ENCODER")
                 onEncoder(n, e, t, data1, data2)
         }
         else if (data1 == ((n * CC_NUM) + CC_FADER[0]) ) { 
-            println("YO I AM FADER ")
+            println("YO I AM FADER")
         }
         else if (data1 >= ((n * CC_NUM) + CC_BUTTON[0]) && data1 <= ((n * CC_NUM) + CC_BUTTON[7])) {
-            println("YO I AM BUTTON ")
+            b = ( data1 -  ( n * CC_NUM  ) ) - CC_ENCODER.length
+            t = ( b + (n * CC_BUTTON.length) ) 
+            println("YO I AM BUTTON")
+            onButton(n,t,b,data1,data2)
         }
      }
 }
 
 
 function onEncoder(nocturn_num, encoder_num, track_num, data1, data2){
-    println("I HANDLE ENCODER track: " + track_num + " enc: " + encoder_num)
-
+    println("onEncoder: " + nocturn_num + " " + encoder_num + " " + track_num + " " + data1 + " " + data2)
     if (current_page == MODE_PAGE.MIXER) {
         track = trackBank.getTrack(track_num)
         if (track) {
@@ -190,6 +178,15 @@ function onEncoder(nocturn_num, encoder_num, track_num, data1, data2){
     }
 }
 
+function onButton(nocturn_num, botton_num, track_num, data1, data2){
+    println("onButton: " + nocturn_num + " " + botton_num + " " + track_num + " " + data1 + " " + data2)
+    if (current_page == MODE_PAGE.MIXER) {
+        track = trackBank.getTrack(track_num)
+        if (track) {
+            track.getVolume().set(data2, 128);
+        }
+    }
+}
 
 function onSysex(data) {
 }
