@@ -11,10 +11,12 @@ const MODE_PAGE =
 {
     MIXER: 0,
     PAN: 1,
-    SEND: 2,
+    DEVICE: 2,
     VUMETER: 3,
-    XFADE: 4,
-    DEVICE: 5,
+    SEND_0: 4,
+    SEND_1: 5,
+    SEND_2: 6,
+    SEND_3: 7,
 };
 
 const CC_ENCODER =
@@ -52,13 +54,14 @@ const CC_NUM = 17
 
 var numSendPages = 2;
 
-/*
 var nocturns = [
     createState(),
     createState(),
-    createState()
+    createState(),
+    createState(),
 ]
-*/
+
+
 function createState() {
     return {
         states: [
@@ -74,57 +77,6 @@ function createState() {
     }
 }
 
-
-var nocturns = [
-    {
-        states: [
-            [0, 0, 0, 0, 0, 0, 0, 0, 127, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        ]
-    },
-    {
-        states: [
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        ]
-    },
-    {
-        states: [
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        ]
-    },
-    {
-        states: [
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        ]
-    }
-]
 
 var current_page = MODE_PAGE.MIXER
 
@@ -155,12 +107,21 @@ function set_enc_state(mode, index, value) {
     nocturns[n]['states'][mode][cc] = value
 }
 
+function makeTwoIndexedFunction(index, index2, f)
+{
+   return function (value)
+   {
+      f(+index, +index2, value);
+   };
+}
+
 function init() {
     host.getMidiInPort(0).setMidiCallback(onMidi);
     host.getMidiInPort(0).setSysexCallback(onSysex);
 
     //trackBank = host.createTrackBank(8, 2, 0);
-    trackBank = host.createMainTrackBank(32, numSendPages, 99);
+    trackBank = host.createMainTrackBank(32, 4, 99);
+
 
     /* TRACK BANK */
     for (var t = 0; t < 32; t++) {
@@ -179,6 +140,17 @@ function init() {
             set_enc_state(MODE_PAGE.PAN, index, value)
         }));
 
+        sb = track.sendBank()
+        println("sendBank: getSizeOfBank: " + sb.getSizeOfBank());
+        for ( send_index = 0;  send_index < sb.getSizeOfBank(); send_index++) {
+            send = sb.getItemAt(send_index)
+            send.addValueObserver(128, makeTwoIndexedFunction(t, send_index, function (track_num, send_num, value) {
+                println("send ValueObserver: t: " + track_num + " s: " + send_num + " val: " + value)
+                
+                set_enc_state(MODE_PAGE['SEND_' + send_num], track_num, value)
+            }));
+    
+        }
     }
 
 }
@@ -260,6 +232,18 @@ function onButton(nocturn_num, botton_num, track_num, data1, data2) {
             setButton(nocturn_num, botton_num, 127)
         } else if (botton_num == MODE_PAGE.VUMETER) {
             current_page = MODE_PAGE.VUMETER
+            setButton(nocturn_num, botton_num, 127)
+        } else if (botton_num == MODE_PAGE.SEND_0) {
+            current_page = MODE_PAGE.SEND_0
+            setButton(nocturn_num, botton_num, 127)
+        } else if (botton_num == MODE_PAGE.SEND_1) {
+            current_page = MODE_PAGE.SEND_1
+            setButton(nocturn_num, botton_num, 127)
+        } else if (botton_num == MODE_PAGE.SEND_2) {
+            current_page = MODE_PAGE.SEND_2
+            setButton(nocturn_num, botton_num, 127)
+        } else if (botton_num == MODE_PAGE.SEND_3) {
+            current_page = MODE_PAGE.SEND_3
             setButton(nocturn_num, botton_num, 127)
         }
     }
