@@ -57,7 +57,6 @@ var nocturns = [
 
 function createState() {
     return {
-        current_page: MODE_PAGE.MIXER,
         states: [
             [0, 0, 0, 0, 0, 0, 0, 0, 127, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 127, 0, 0, 0, 0, 0, 0, 0],
@@ -89,14 +88,13 @@ function init() {
     for (var t = 0; t < 32; t++) {
         var track = trackBank.getTrack(t);
 
-        track.addVuMeterObserver(128, -1, true, makeIndexedFunction(t, function (index, value) 
-		{
+        track.addVuMeterObserver(128, -1, true, makeIndexedFunction(t, function (index, value) {
             if (current_page == MODE_PAGE.VUMETER) {
                 var n = Math.floor(index / CC_ENCODER.length)
                 cc = index - (CC_ENCODER.length * n)
                 nocturns[n]['states'][MODE_PAGE.VUMETER][cc] = value
             }
-            }));
+        }));
 
 
         track.getVolume().addValueObserver(128, makeIndexedFunction(t, function (index, value) {
@@ -133,10 +131,15 @@ function pausecomp(millis) {
 
 function flush() {
     for (var i in nocturns) {
-        for (var state in nocturns[i]['states'][nocturns[i]['current_page']]) {
-            val = nocturns[i]['states'][nocturns[i]['current_page']][state]
+        println("i: " + i)
+        println("state: " + nocturns[i]['states'][current_page])
+        for (var state in nocturns[i]['states'][current_page]) {
+            val = nocturns[i]['states'][current_page][state]
             cc = +state + (+i * CC_NUM)
+            //if (val > 0) {
+            //   println("cc: " + cc + " val: " + val)
             sendChannelController(0, cc, val);
+            //}
         }
 
     }
@@ -148,28 +151,26 @@ function onMidi(status, data1, data2) {
     n = Math.floor(data1 / CC_NUM)
     println("nocturn num: " + n);
 
-    if (current_page == MODE_PAGE.MIXER) {
-        if (data1 >= ((n * CC_NUM) + CC_ENCODER[0]) && data1 <= ((n * CC_NUM) + CC_ENCODER[7])) {
-                e = data1 - (n * CC_NUM) 
-                t = ( e + (n * CC_ENCODER.length) ) 
-                println("YO I AM ENCODER")
-                onEncoder(n, e, t, data1, data2)
-        }
-        else if (data1 == ((n * CC_NUM) + CC_FADER[0]) ) { 
-            println("YO I AM FADER")
-        }
-        else if (data1 >= ((n * CC_NUM) + CC_BUTTON[0]) && data1 <= ((n * CC_NUM) + CC_BUTTON[7])) {
-            b = ( data1 -  ( n * CC_NUM  ) ) - CC_ENCODER.length
-            t = ( b + (n * CC_BUTTON.length) ) 
-            println("YO I AM BUTTON")
-            onButton(n,t,b,data1,data2)
-        }
-     }
+    if (data1 >= ((n * CC_NUM) + CC_ENCODER[0]) && data1 <= ((n * CC_NUM) + CC_ENCODER[7])) {
+        e = data1 - (n * CC_NUM)
+        t = (e + (n * CC_ENCODER.length))
+        //println("YO I AM ENCODER")
+        onEncoder(n, e, t, data1, data2)
+    }
+    else if (data1 == ((n * CC_NUM) + CC_FADER[0])) {
+        println("YO I AM FADER")
+    }
+    else if (data1 >= ((n * CC_NUM) + CC_BUTTON[0]) && data1 <= ((n * CC_NUM) + CC_BUTTON[7])) {
+        b = (data1 - (n * CC_NUM)) - CC_ENCODER.length
+        t = (b + (n * CC_BUTTON.length))
+        //println("YO I AM BUTTON")
+        onButton(n, b, t, data1, data2)
+    }
 }
 
 
-function onEncoder(nocturn_num, encoder_num, track_num, data1, data2){
-    println("onEncoder: " + nocturn_num + " " + encoder_num + " " + track_num + " " + data1 + " " + data2)
+function onEncoder(nocturn_num, encoder_num, track_num, data1, data2) {
+    //println("onEncoder: " + nocturn_num + " " + encoder_num + " " + track_num + " " + data1 + " " + data2)
     if (current_page == MODE_PAGE.MIXER) {
         track = trackBank.getTrack(track_num)
         if (track) {
@@ -178,10 +179,27 @@ function onEncoder(nocturn_num, encoder_num, track_num, data1, data2){
     }
 }
 
-function onButton(nocturn_num, botton_num, track_num, data1, data2){
-    println("onButton: " + nocturn_num + " " + botton_num + " " + track_num + " " + data1 + " " + data2)
-    if (current_page == MODE_PAGE.MIXER) {
+function onButton(nocturn_num, botton_num, track_num, data1, data2) {
+    //println("onButton: " + nocturn_num + " " + botton_num + " " + track_num + " " + data1 + " " + data2)
+    if (nocturn_num == 0) {
+        if (botton_num == MODE_PAGE.MIXER) {
+            current_page = MODE_PAGE.MIXER
+            setButton(nocturn_num, botton_num, 127)
+        } else if (botton_num == MODE_PAGE.VUMETER) {
+            current_page = MODE_PAGE.VUMETER
+            setButton(nocturn_num, botton_num, 127)
+        }
     }
+}
+
+function setButton(nocturn_num, botton_num, val) {
+    //println("setButton: " + nocturn_num + " " + botton_num)
+    //println("setButton: " + CC_BUTTON.length)
+    for (var i = 0; i < CC_BUTTON.length; i++) {
+        // println("cc: " + i + " cur: " + nocturns[nocturn_num]['states'][current_page][CC_BUTTON[i]])
+        nocturns[nocturn_num]['states'][current_page][CC_BUTTON[i]] = 0
+    }
+    nocturns[nocturn_num]['states'][current_page][CC_BUTTON[botton_num]] = 127
 }
 
 function onSysex(data) {
