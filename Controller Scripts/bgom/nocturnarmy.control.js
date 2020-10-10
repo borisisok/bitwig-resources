@@ -144,27 +144,16 @@ function init() {
 
         track.getVolume().addValueObserver(128, makeIndexedFunction(t, function (index, value) {
             println("Volume: track: " + index + " value: " + value);
-
-            n = get_noc_num(index)
-            cc = get_noc_cc(index, n)
-            println("nocturn num: " + n);
-            println("nocturn cc: " + cc);
-
-            nocturns[n]['states'][MODE_PAGE.MIXER][cc] = value
+            set_enc_state(MODE_PAGE.MIXER, index, value)
         }));
 
         track.getPan().addValueObserver(128, makeIndexedFunction(t, function(index, value)
 		{
-            get_enc_state(MODE_PAGE.PAN, index) = value
+            set_enc_state(MODE_PAGE.PAN, index, value )
 		}));
 
     }
  
-
-    println(nocturns[0]['states'])
-
-    //    dump( nocturn[0]['states'] )
-
 }
 
 function get_noc_num(index){
@@ -177,8 +166,16 @@ function get_noc_cc(noc_num, index){
 
 function get_enc_state(mode, index) {
     n = get_noc_num(index)
-    cc = get_noc_cc(index, n)
+    cc = get_noc_cc(n, index)
     return nocturns[n]['states'][mode][cc]
+}
+
+function set_enc_state(mode, index, value) {
+    n = get_noc_num(index)
+    cc = get_noc_cc(n, index)
+    println("set_enc_state() mode: " + mode + " index: " + index + " value: " + value)
+    println("set_enc_state() n: " + n + " cc: " + cc)
+    nocturns[n]['states'][mode][cc] = value
 }
 
 function exit() {
@@ -193,8 +190,8 @@ function pausecomp(millis) {
 
 function flush() {
     for (var i in nocturns) {
-        println ("i: " + i)
-        println ("state: " + nocturns[i]['states'][current_page] )
+       // println ("i: " + i)
+       // println ("state: " + nocturns[i]['states'][current_page] )
         for (var state in nocturns[i]['states'][current_page]) {
             val = nocturns[i]['states'][current_page][state]
             cc = +state + (+i * CC_NUM)
