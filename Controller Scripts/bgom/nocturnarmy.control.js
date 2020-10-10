@@ -114,12 +114,33 @@ var nocturns = [
     }
 ]
 
+var current_page = MODE_PAGE.MIXER
+
+
 function getCC(nocturn_num, cc) {
     return (nocturn_num * CC_NUM) + cc
 }
+function get_noc_num(index){
+    return Math.floor(index / CC_ENCODER.length)
+}
 
+function get_noc_cc(noc_num, index){
+    return index - (CC_ENCODER.length * n)
+}
 
-var current_page = MODE_PAGE.MIXER
+function get_enc_state(mode, index) {
+    n = get_noc_num(index)
+    cc = get_noc_cc(n, index)
+    return nocturns[n]['states'][mode][cc]
+}
+
+function set_enc_state(mode, index, value) {
+    n = get_noc_num(index)
+    cc = get_noc_cc(n, index)
+    println("set_enc_state() mode: " + mode + " index: " + index + " value: " + value)
+    println("set_enc_state() n: " + n + " cc: " + cc)
+    nocturns[n]['states'][mode][cc] = value
+}
 
 function init() {
     host.getMidiInPort(0).setMidiCallback(onMidi);
@@ -154,28 +175,6 @@ function init() {
 
     }
  
-}
-
-function get_noc_num(index){
-    return Math.floor(index / CC_ENCODER.length)
-}
-
-function get_noc_cc(noc_num, index){
-    return index - (CC_ENCODER.length * n)
-}
-
-function get_enc_state(mode, index) {
-    n = get_noc_num(index)
-    cc = get_noc_cc(n, index)
-    return nocturns[n]['states'][mode][cc]
-}
-
-function set_enc_state(mode, index, value) {
-    n = get_noc_num(index)
-    cc = get_noc_cc(n, index)
-    println("set_enc_state() mode: " + mode + " index: " + index + " value: " + value)
-    println("set_enc_state() n: " + n + " cc: " + cc)
-    nocturns[n]['states'][mode][cc] = value
 }
 
 function exit() {
