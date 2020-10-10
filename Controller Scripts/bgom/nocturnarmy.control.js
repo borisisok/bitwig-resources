@@ -167,16 +167,16 @@ function init() {
         var track = trackBank.getTrack(t);
 
         track.addVuMeterObserver(128, -1, true, makeIndexedFunction(t, function (index, value) {
-                set_enc_state(MODE_PAGE.VUMETER, index, value)
+            set_enc_state(MODE_PAGE.VUMETER, index, value)
         }));
-        
+
         track.getVolume().addValueObserver(128, makeIndexedFunction(t, function (index, value) {
             println("Volume: track: " + index + " value: " + value);
-                set_enc_state(MODE_PAGE.MIXER, index, value)
+            set_enc_state(MODE_PAGE.MIXER, index, value)
         }));
 
         track.getPan().addValueObserver(128, makeIndexedFunction(t, function (index, value) {
-                set_enc_state(MODE_PAGE.PAN, index, value)
+            set_enc_state(MODE_PAGE.PAN, index, value)
         }));
 
     }
@@ -240,7 +240,13 @@ function onEncoder(nocturn_num, encoder_num, track_num, data1, data2) {
         if (track) {
             track.getVolume().set(data2, 128);
         }
+    } else if (current_page == MODE_PAGE.PAN) {
+        track = trackBank.getTrack(track_num)
+        if (track) {
+            track.getPan().set(data2, 128);
+        }
     }
+
 }
 
 function onButton(nocturn_num, botton_num, track_num, data1, data2) {
