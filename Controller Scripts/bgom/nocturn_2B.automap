@@ -16,14 +16,14 @@
             <Param name="CC# 24" shortName="CC# 24" id="24" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
         </Group>
         <Group name="Page 1 Pots">
-            <Param name="CC# 25" shortName="CC# 25" id="25" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
-            <Param name="CC# 26" shortName="CC# 26" id="26" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
-            <Param name="CC# 27" shortName="CC# 27" id="27" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
-            <Param name="CC# 28" shortName="CC# 28" id="28" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
-            <Param name="CC# 29" shortName="CC# 29" id="29" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
-            <Param name="CC# 30" shortName="CC# 30" id="30" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
-            <Param name="CC# 31" shortName="CC# 31" id="31" intStep="1" intMax="100" intMin="0" high="100" low="0" step="1.000000" />
-            <Param name="CC# 32" shortName="CC# 32" id="32" intStep="1" intMax="100" intMin="0" high="100" low="0" step="1.000000" />
+            <Param name="CC# 25" shortName="CC# 25" id="25" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
+            <Param name="CC# 26" shortName="CC# 26" id="26" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
+            <Param name="CC# 27" shortName="CC# 27" id="27" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
+            <Param name="CC# 28" shortName="CC# 28" id="28" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
+            <Param name="CC# 29" shortName="CC# 29" id="29" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
+            <Param name="CC# 30" shortName="CC# 30" id="30" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
+            <Param name="CC# 31" shortName="CC# 31" id="31" intStep="100" intMax="100" intMin="0" high="100" low="0" step="100.000000" />
+            <Param name="CC# 32" shortName="CC# 32" id="32" intStep="100" intMax="100" intMin="0" high="100" low="0" step="100.000000" />
         </Group>
         <Group name="Page 1 XFader">
             <Param name="CC# 33" shortName="CC# 33" id="33" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
