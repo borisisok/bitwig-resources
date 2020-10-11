@@ -107,13 +107,12 @@ function set_enc_state(mode, index, value) {
     nocturns[n]['states'][mode][cc] = value
 }
 
-function makeTwoIndexedFunction(index, index2, f)
-{
-   return function (value)
-   {
-      f(+index, +index2, value);
-   };
+function makeTwoIndexedFunction(index, index2, f) {
+    return function (value) {
+        f(+index, +index2, value);
+    };
 }
+var trackBank
 
 function init() {
     host.getMidiInPort(0).setMidiCallback(onMidi);
@@ -142,14 +141,14 @@ function init() {
 
         sb = track.sendBank()
         println("sendBank: getSizeOfBank: " + sb.getSizeOfBank());
-        for ( send_index = 0;  send_index < sb.getSizeOfBank(); send_index++) {
+        for (send_index = 0; send_index < sb.getSizeOfBank(); send_index++) {
             send = sb.getItemAt(send_index)
             send.addValueObserver(128, makeTwoIndexedFunction(t, send_index, function (track_num, send_num, value) {
                 println("send ValueObserver: t: " + track_num + " s: " + send_num + " val: " + value)
-                
+
                 set_enc_state(MODE_PAGE['SEND_' + send_num], track_num, value)
             }));
-    
+
         }
     }
 
@@ -208,14 +207,41 @@ function onMidi(status, data1, data2) {
 function onEncoder(nocturn_num, encoder_num, track_num, data1, data2) {
     //println("onEncoder: " + nocturn_num + " " + encoder_num + " " + track_num + " " + data1 + " " + data2)
     if (current_page == MODE_PAGE.MIXER) {
+
         track = trackBank.getTrack(track_num)
         if (track) {
-            track.getVolume().set(data2, 128);
+            track.getVolume().setIndication(true)
+            track.getVolume().set(data2, 128)
         }
     } else if (current_page == MODE_PAGE.PAN) {
         track = trackBank.getTrack(track_num)
         if (track) {
+            //track.getPan().setIndication(true)
             track.getPan().set(data2, 128);
+        }
+    } else if (current_page == MODE_PAGE.SEND_0) {
+        track = trackBank.getTrack(track_num)
+        if (track) {
+            sb = track.sendBank()
+            sb.getItemAt(0).set(data2, 128);
+        }
+    } else if (current_page == MODE_PAGE.SEND_1) {
+        track = trackBank.getTrack(track_num)
+        if (track) {
+            sb = track.sendBank()
+            sb.getItemAt(1).set(data2, 128);
+        }
+    } else if (current_page == MODE_PAGE.SEND_2) {
+        track = trackBank.getTrack(track_num)
+        if (track) {
+            sb = track.sendBank()
+            sb.getItemAt(2).set(data2, 128);
+        }
+    } else if (current_page == MODE_PAGE.SEND_3) {
+        track = trackBank.getTrack(track_num)
+        if (track) {
+            sb = track.sendBank()
+            sb.getItemAt(3).set(data2, 128);
         }
     }
 
@@ -226,24 +252,31 @@ function onButton(nocturn_num, botton_num, track_num, data1, data2) {
     if (nocturn_num == 0) {
         if (botton_num == MODE_PAGE.MIXER) {
             current_page = MODE_PAGE.MIXER
+            setIndicationMixer()
             setButton(nocturn_num, botton_num, 127)
         } else if (botton_num == MODE_PAGE.PAN) {
             current_page = MODE_PAGE.PAN
+            setIndicationPan()
             setButton(nocturn_num, botton_num, 127)
         } else if (botton_num == MODE_PAGE.VUMETER) {
             current_page = MODE_PAGE.VUMETER
+            setIndicationOff()
             setButton(nocturn_num, botton_num, 127)
         } else if (botton_num == MODE_PAGE.SEND_0) {
             current_page = MODE_PAGE.SEND_0
+            setIndicationSend(0)
             setButton(nocturn_num, botton_num, 127)
         } else if (botton_num == MODE_PAGE.SEND_1) {
             current_page = MODE_PAGE.SEND_1
+            setIndicationSend(1)
             setButton(nocturn_num, botton_num, 127)
         } else if (botton_num == MODE_PAGE.SEND_2) {
             current_page = MODE_PAGE.SEND_2
+            setIndicationSend(2)
             setButton(nocturn_num, botton_num, 127)
         } else if (botton_num == MODE_PAGE.SEND_3) {
             current_page = MODE_PAGE.SEND_3
+            setIndicationSend(3)
             setButton(nocturn_num, botton_num, 127)
         }
     }
@@ -258,6 +291,74 @@ function setButton(nocturn_num, botton_num, val) {
     }
     nocturns[nocturn_num]['states'][current_page][CC_BUTTON[botton_num]] = 127
 }
+
+function setIndicationOff() {
+
+    /* TRACK BANK */
+    for (var t = 0; t < 32; t++) {
+        var track = trackBank.getTrack(t);
+        track.getVolume().setIndication(false)
+        track.getPan().setIndication(false)
+        sb = track.sendBank()
+        for (send_index = 0; send_index < sb.getSizeOfBank(); send_index++) {
+            send = sb.getItemAt(send_index)
+            send.setIndication(false)
+        }
+    }
+}
+
+function setIndicationMixer() {
+
+    /* TRACK BANK */
+    for (var t = 0; t < 32; t++) {
+        var track = trackBank.getTrack(t);
+        track.getVolume().setIndication(true)
+        track.getPan().setIndication(false)
+        sb = track.sendBank()
+        for (send_index = 0; send_index < sb.getSizeOfBank(); send_index++) {
+            send = sb.getItemAt(send_index)
+            send.setIndication(false)
+        }
+    }
+
+}
+
+function setIndicationPan() {
+
+    /* TRACK BANK */
+    for (var t = 0; t < 32; t++) {
+        var track = trackBank.getTrack(t);
+        track.getVolume().setIndication(false)
+        track.getPan().setIndication(true)
+        sb = track.sendBank()
+        for (send_index = 0; send_index < sb.getSizeOfBank(); send_index++) {
+            send = sb.getItemAt(send_index)
+            send.setIndication(false)
+        }
+    }
+
+}
+
+function setIndicationSend(send_num) {
+
+    /* TRACK BANK */
+    for (var t = 0; t < 32; t++) {
+        var track = trackBank.getTrack(t);
+        track.getVolume().setIndication(false)
+        track.getPan().setIndication(false)
+        sb = track.sendBank()
+        for (send_index = 0; send_index < sb.getSizeOfBank(); send_index++) {
+            send = sb.getItemAt(send_index)
+            if (send_index == send_num) {
+                send.setIndication(true)
+            } else {
+                send.setIndication(false)
+            }
+        }
+    }
+
+}
+
 
 function onSysex(data) {
 }
