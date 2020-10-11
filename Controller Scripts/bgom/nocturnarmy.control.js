@@ -1,5 +1,8 @@
-/*
+/* Workdir:
  * cd /cygdrive/c/Users/gomol/Documents/Bitwig\ Studio/Controller\ Scripts/bgom/
+ * Docs: 
+ * file:///C:/Program%20Files/Bitwig%20Studio/3.2.8/resources/doc/control-surface/scripting-guide.pdf
+ * file:///C:/Program%20Files/Bitwig%20Studio/3.2.8/resources/doc/control-surface/api/annotated.html
  */
 loadAPI(1);
 
@@ -32,10 +35,10 @@ const MODE_SHIFT =
 var current_shift = {}
 
 
-current_shift[MODE_SHIFT.MAIN] = true
-current_shift[MODE_SHIFT.SOLO] = true
-current_shift[MODE_SHIFT.MUTE] = true
-current_shift[MODE_SHIFT.REC] = true
+current_shift[MODE_SHIFT.MAIN] = false
+current_shift[MODE_SHIFT.SOLO] = false
+current_shift[MODE_SHIFT.MUTE] = false
+current_shift[MODE_SHIFT.REC] = false
 
 
 
@@ -218,13 +221,16 @@ function onMidi(status, data1, data2) {
     n = Math.floor(data1 / CC_NUM)
     println("nocturn num: " + n);
 
-    if ((data1 => CC_SHIFT_BUTTON[0]) && (data1 <= CC_SHIFT_BUTTON[5])) {
+    if ((data1 >= CC_SHIFT_BUTTON[0]) && (data1 <= CC_SHIFT_BUTTON[5])) {
         // shift button detection
         println("YO night shift")
-        if (data1 != 0) { current_shift[data1] = true }
-        else { current_shift[data1] = false }
-    }
-
+        if (data2 != 0) { 
+            println("Shift on: " + data1)
+            current_shift[data1] = true }
+        else { 
+            println("Shift off: " + data1)
+            current_shift[data1] = false }
+    } 
 
     if (data1 >= ((n * CC_NUM) + CC_ENCODER[0]) && data1 <= ((n * CC_NUM) + CC_ENCODER[7])) {
         e = data1 - (n * CC_NUM)
@@ -247,7 +253,6 @@ function onMidi(status, data1, data2) {
 function onEncoder(nocturn_num, encoder_num, track_num, data1, data2) {
     //println("onEncoder: " + nocturn_num + " " + encoder_num + " " + track_num + " " + data1 + " " + data2)
     if (current_page == MODE_PAGE.MIXER) {
-
         track = trackBank.getTrack(track_num)
         if (track) {
             track.getVolume().setIndication(true)
@@ -290,36 +295,55 @@ function onEncoder(nocturn_num, encoder_num, track_num, data1, data2) {
 function onButton(nocturn_num, botton_num, track_num, data1, data2) {
     //println("onButton: " + nocturn_num + " " + botton_num + " " + track_num + " " + data1 + " " + data2)
     if (nocturn_num == 0) {
-        if (botton_num == MODE_PAGE.MIXER) {
+        if (current_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.MIXER) {
             current_page = MODE_PAGE.MIXER
             setIndicationMixer()
             setButton(nocturn_num, botton_num, 127)
-        } else if (botton_num == MODE_PAGE.PAN) {
+        } else if (current_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.PAN) {
             current_page = MODE_PAGE.PAN
             setIndicationPan()
             setButton(nocturn_num, botton_num, 127)
-        } else if (botton_num == MODE_PAGE.VUMETER) {
+        } else if (current_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.VUMETER) {
             current_page = MODE_PAGE.VUMETER
             setIndicationOff()
             setButton(nocturn_num, botton_num, 127)
-        } else if (botton_num == MODE_PAGE.SEND_0) {
+        } else if (current_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.SEND_0) {
             current_page = MODE_PAGE.SEND_0
             setIndicationSend(0)
             setButton(nocturn_num, botton_num, 127)
-        } else if (botton_num == MODE_PAGE.SEND_1) {
+        } else if (current_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.SEND_1) {
             current_page = MODE_PAGE.SEND_1
             setIndicationSend(1)
             setButton(nocturn_num, botton_num, 127)
-        } else if (botton_num == MODE_PAGE.SEND_2) {
+        } else if (current_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.SEND_2) {
             current_page = MODE_PAGE.SEND_2
             setIndicationSend(2)
             setButton(nocturn_num, botton_num, 127)
-        } else if (botton_num == MODE_PAGE.SEND_3) {
+        } else if (current_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.SEND_3) {
             current_page = MODE_PAGE.SEND_3
             setIndicationSend(3)
             setButton(nocturn_num, botton_num, 127)
         }
     }
+
+    if (current_shift[MODE_SHIFT.SOLO] ) {
+        println("Solo....")
+        track = trackBank.getTrack(track_num)
+        if (track) {
+            track.getSolo().toggle();
+        }
+        //setIndicationSolo(3)
+        setButton(nocturn_num, botton_num, 127)
+    } else if (current_shift[MODE_SHIFT.MUTE] ) {
+        println("Mute....")
+        track = trackBank.getTrack(track_num)
+        if (track) {
+            track.getMute().toggle();
+        }
+        //setIndicationMute(3)
+        setButton(nocturn_num, botton_num, 127)
+    }
+
 }
 
 function setButton(nocturn_num, botton_num, val) {
@@ -378,6 +402,7 @@ function setIndicationPan() {
     }
 
 }
+
 
 function setIndicationSend(send_num) {
 
