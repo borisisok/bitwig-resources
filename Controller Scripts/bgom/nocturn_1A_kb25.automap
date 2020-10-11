@@ -34,14 +34,14 @@
             <Param name="CC# 125" shortName="CC# 125" id="125" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
         </Group>
         <Group name="Page 1 Drumpads">
-            <Param />
-            <Param />
-            <Param />
-            <Param />
-            <Param />
-            <Param />
-            <Param />
-            <Param />
+            <Param name="CC# 110" shortName="CC# 110" id="110" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
+            <Param name="CC# 111" shortName="CC# 111" id="111" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
+            <Param name="CC# 112" shortName="CC# 112" id="112" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
+            <Param name="CC# 113" shortName="CC# 113" id="113" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
+            <Param name="CC# 114" shortName="CC# 114" id="114" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
+            <Param name="CC# 115" shortName="CC# 115" id="115" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
+            <Param name="CC# 116" shortName="CC# 116" id="116" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
+            <Param name="CC# 117" shortName="CC# 117" id="117" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
         </Group>
         <Group name="Page 1 Pedals">
             <Param name="CC# 127" shortName="CC# 127" id="127" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
