@@ -19,6 +19,26 @@ const MODE_PAGE =
     SEND_3: 7,
 };
 
+const MODE_SHIFT =
+{
+    MAIN: 120,
+    SOLO: 121,
+    MUTE: 122,
+    REC: 123,
+    UNDEF_0: 124,
+    UNDEF_1: 125
+};
+
+var current_shift = {}
+
+
+current_shift[MODE_SHIFT.MAIN] = true
+current_shift[MODE_SHIFT.SOLO] = true
+current_shift[MODE_SHIFT.MUTE] = true
+current_shift[MODE_SHIFT.REC] = true
+
+
+
 const CC_ENCODER =
     [
         0,
@@ -48,11 +68,23 @@ const CC_FADER =
         16
     ];
 
+const CC_SHIFT_BUTTON =
+    [
+        120,
+        121,
+        122,
+        123,
+        124,
+        125
+    ];
+
+const SHIFT_CHAN = 7
+
+
 const CC_MIN = 0
 const CC_MAX = 16
 const CC_NUM = 17
 
-var numSendPages = 2;
 
 var nocturns = [
     createState(),
@@ -185,6 +217,14 @@ function onMidi(status, data1, data2) {
     // which nocturn number is the source
     n = Math.floor(data1 / CC_NUM)
     println("nocturn num: " + n);
+
+    if ((data1 => CC_SHIFT_BUTTON[0]) && (data1 <= CC_SHIFT_BUTTON[5])) {
+        // shift button detection
+        println("YO night shift")
+        if (data1 != 0) { current_shift[data1] = true }
+        else { current_shift[data1] = false }
+    }
+
 
     if (data1 >= ((n * CC_NUM) + CC_ENCODER[0]) && data1 <= ((n * CC_NUM) + CC_ENCODER[7])) {
         e = data1 - (n * CC_NUM)
