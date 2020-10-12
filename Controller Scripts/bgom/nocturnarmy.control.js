@@ -67,10 +67,20 @@ function has_active_shift() {
 function get_active_shift() {
     for ( var shift_type in MODE_SHIFT){
         if (active_shift[shift_type]){
+            return MODE_SHIFT[shift_type]
+        }
+    }
+}
+
+function get_active_shift_type() {
+    for ( var shift_type in MODE_SHIFT){
+        if (active_shift[shift_type]){
             return shift_type
         }
     }
 }
+
+
 
 const CC_ENCODER =
     [
@@ -238,7 +248,7 @@ function pausecomp(millis) {
 function flush() {
     if (has_active_shift()) {
        prev_page = current_page
-       current_page = MODE_PAGE[get_active_shift()]
+       current_page = MODE_PAGE[get_active_shift_type()]
        println ("A")
     } else if (prev_page != false && no_active_shift()) {
        current_page = prev_page
@@ -388,22 +398,22 @@ function onButton(nocturn_num, botton_num, track_num, data1, data2) {
         }
     }
 
-    if (active_shift[MODE_SHIFT.SOLO] ) {
+    if (active_shift['SOLO'] ) {
         println("Solo....")
         track = trackBank.getTrack(track_num)
         if (track) {
             track.getSolo().toggle();
         }
         //setIndicationSolo(3)
-        setButton(nocturn_num, botton_num, 127)
-    } else if (active_shift[MODE_SHIFT.MUTE] ) {
+        // setButton(nocturn_num, botton_num, 127)
+    } else if (active_shift['MUTE'] ) {
         println("Mute....")
         track = trackBank.getTrack(track_num)
         if (track) {
             track.getMute().toggle();
         }
         //setIndicationMute(3)
-        setButton(nocturn_num, botton_num, 127)
+        //setButton(nocturn_num, botton_num, 127)
     }
 
 }
