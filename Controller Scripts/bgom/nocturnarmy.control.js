@@ -20,27 +20,55 @@ const MODE_PAGE =
     SEND_1: 5,
     SEND_2: 6,
     SEND_3: 7,
+    SOLO: 8,
+    MUTE: 9,
 };
 
 const MODE_SHIFT =
 {
-    MAIN: 120,
-    SOLO: 121,
-    MUTE: 122,
-    REC: 123,
-    UNDEF_0: 124,
-    UNDEF_1: 125
+    SOLO: 120,
+    MUTE: 121,
+    REC: 122,
+    UNDEF_0: 123,
+    UNDEF_1: 124,
+    UNDEF_2: 125
 };
 
 var active_shift = {}
 
+// init shift array
+for ( var shift_type in MODE_SHIFT){
+    active_shift[shift_type] = false
+}
 
-active_shift[MODE_SHIFT.MAIN] = false
-active_shift[MODE_SHIFT.SOLO] = false
-active_shift[MODE_SHIFT.MUTE] = false
-active_shift[MODE_SHIFT.REC] = false
 
+function no_active_shift() {
+    for ( var shift_type in MODE_SHIFT){
+        if (active_shift[shift_type]){
+            return false
+        }
+    }
+    return true
+}
 
+function has_active_shift() {
+    println("has_active_shift ? ")
+    for ( var shift_type in MODE_SHIFT){
+        if (active_shift[shift_type]){
+            println("has_active_shift yes " + shift_type)
+            return true
+        }
+    }
+    return false
+}
+
+function get_active_shift() {
+    for ( var shift_type in MODE_SHIFT){
+        if (active_shift[shift_type]){
+            return shift_type
+        }
+    }
+}
 
 const CC_ENCODER =
     [
@@ -99,22 +127,21 @@ var nocturns = [
 
 function createState() {
     return {
-        states: [
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-            [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        ]
+        states: createStateArrays()
     }
 }
 
+function createStateArrays() {
+    println("X : " )
+    var res = []    
+    for (x in MODE_PAGE) {
+        res.push([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
+    }
+    return res
+}
 
 var current_page = MODE_PAGE.MIXER
-
+var prev_page = false
 
 function getCC(nocturn_num, cc) {
     return (nocturn_num * CC_NUM) + cc
@@ -153,7 +180,6 @@ function init() {
     host.getMidiInPort(0).setMidiCallback(onMidi);
     host.getMidiInPort(0).setSysexCallback(onSysex);
 
-    //trackBank = host.createTrackBank(8, 2, 0);
     trackBank = host.createMainTrackBank(32, 4, 99);
 
 
@@ -174,6 +200,14 @@ function init() {
             set_enc_state(MODE_PAGE.PAN, index, value)
         }));
 
+		track.getSolo().addValueObserver(makeIndexedFunction(t, function(index, on)
+		{
+            println("SOLO")
+            set_enc_state(MODE_PAGE.SOLO, index, on ? 127 : 0)
+			//sendNoteOn(0, CHANNEL_BUTTON.SOLO0 + index, on ? 127 : 0);
+            //setButton();
+        }));
+        
         sb = track.sendBank()
         println("sendBank: getSizeOfBank: " + sb.getSizeOfBank());
         for (send_index = 0; send_index < sb.getSizeOfBank(); send_index++) {
@@ -200,8 +234,18 @@ function pausecomp(millis) {
 }
 
 function flush() {
+    if (has_active_shift()) {
+       prev_page = current_page
+       current_page = MODE_PAGE[get_active_shift()]
+       println ("A")
+    } else if (prev_page != false && no_active_shift()) {
+       current_page = prev_page
+       println ("B")
+       prev_page = false
+    }
+
     for (var i in nocturns) {
-        // println ("i: " + i)
+         println ("i: " + i)
         // println ("state: " + nocturns[i]['states'][current_page] )
         for (var state in nocturns[i]['states'][current_page]) {
             val = nocturns[i]['states'][current_page][state]
@@ -246,7 +290,16 @@ function onMidi(status, data1, data2) {
         t = (b + (n * CC_BUTTON.length))
         //println("YO I AM BUTTON")
         onButton(n, b, t, data1, data2)
+    } 
+    
+    /*
+    else if (has_active_shift) {
+        prev_page = current_page
+        current_page = MODE_PAGE[get_active_shift()]
+    } else if (no_active_shift) {
+        current_page = prev_page
     }
+    */
 }
 
 
@@ -295,31 +348,31 @@ function onEncoder(nocturn_num, encoder_num, track_num, data1, data2) {
 function onButton(nocturn_num, botton_num, track_num, data1, data2) {
     //println("onButton: " + nocturn_num + " " + botton_num + " " + track_num + " " + data1 + " " + data2)
     if (nocturn_num == 0) {
-        if (active_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.MIXER) {
+        if (no_active_shift() && botton_num == MODE_PAGE.MIXER) {
             current_page = MODE_PAGE.MIXER
             setIndicationMixer()
             setButton(nocturn_num, botton_num, 127)
-        } else if (active_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.PAN) {
+        } else if (no_active_shift() && botton_num == MODE_PAGE.PAN) {
             current_page = MODE_PAGE.PAN
             setIndicationPan()
             setButton(nocturn_num, botton_num, 127)
-        } else if (active_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.VUMETER) {
+        } else if (no_active_shift() && botton_num == MODE_PAGE.VUMETER) {
             current_page = MODE_PAGE.VUMETER
             setIndicationOff()
             setButton(nocturn_num, botton_num, 127)
-        } else if (active_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.SEND_0) {
+        } else if (no_active_shift() && botton_num == MODE_PAGE.SEND_0) {
             current_page = MODE_PAGE.SEND_0
             setIndicationSend(0)
             setButton(nocturn_num, botton_num, 127)
-        } else if (active_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.SEND_1) {
+        } else if (no_active_shift() && botton_num == MODE_PAGE.SEND_1) {
             current_page = MODE_PAGE.SEND_1
             setIndicationSend(1)
             setButton(nocturn_num, botton_num, 127)
-        } else if (active_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.SEND_2) {
+        } else if (no_active_shift() && botton_num == MODE_PAGE.SEND_2) {
             current_page = MODE_PAGE.SEND_2
             setIndicationSend(2)
             setButton(nocturn_num, botton_num, 127)
-        } else if (active_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.SEND_3) {
+        } else if (no_active_shift() && botton_num == MODE_PAGE.SEND_3) {
             current_page = MODE_PAGE.SEND_3
             setIndicationSend(3)
             setButton(nocturn_num, botton_num, 127)

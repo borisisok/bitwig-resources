@@ -26,12 +26,12 @@
             <Param name="CC# 15" shortName="CC# 15" id="15" intStep="100" intMax="100" intMin="0" high="100" low="0" step="100.000000" />
         </Group>
         <Group name="Page 1 Transport Buttons">
-            <Param name="CC# 120" shortName="CC# 120" id="120" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
-            <Param name="CC# 121" shortName="CC# 121" id="121" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
-            <Param name="CC# 122" shortName="CC# 122" id="122" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
-            <Param name="CC# 123" shortName="CC# 123" id="123" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
-            <Param name="CC# 124" shortName="CC# 124" id="124" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
-            <Param name="CC# 125" shortName="CC# 125" id="125" intStep="127" intMax="127" intMin="0" high="127" low="0" step="127.000000" />
+            <Param name="CC# 120" shortName="CC# 120" id="120" intStep="0" intMax="127" intMin="0" high="127" low="0" step="0.000000" />
+            <Param name="CC# 121" shortName="CC# 121" id="121" intStep="0" intMax="127" intMin="0" high="127" low="0" step="0.000000" />
+            <Param name="CC# 122" shortName="CC# 122" id="122" intStep="0" intMax="127" intMin="0" high="127" low="0" step="0.000000" />
+            <Param name="CC# 123" shortName="CC# 123" id="123" intStep="0" intMax="127" intMin="0" high="127" low="0" step="0.000000" />
+            <Param name="CC# 124" shortName="CC# 124" id="124" intStep="0" intMax="127" intMin="0" high="127" low="0" step="0.000000" />
+            <Param name="CC# 125" shortName="CC# 125" id="125" intStep="0" intMax="127" intMin="0" high="127" low="0" step="0.000000" />
         </Group>
         <Group name="Page 1 Drumpads">
             <Param name="CC# 110" shortName="CC# 110" id="110" intStep="1" intMax="127" intMin="0" high="127" low="0" step="1.000000" />
