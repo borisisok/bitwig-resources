@@ -34,10 +34,12 @@ const MODE_SHIFT =
     UNDEF_2: 125
 };
 
+
 var active_shift = {}
 
 // init shift array
 for ( var shift_type in MODE_SHIFT){
+    println("shift_type: " + shift_type)
     active_shift[shift_type] = false
 }
 
@@ -268,12 +270,19 @@ function onMidi(status, data1, data2) {
     if ((data1 >= CC_SHIFT_BUTTON[0]) && (data1 <= CC_SHIFT_BUTTON[5])) {
         // shift button detection
         println("YO night shift")
-        if (data2 != 0) { 
-            println("Shift on: " + data1)
-            active_shift[data1] = true }
-        else { 
-            println("Shift off: " + data1)
-            active_shift[data1] = false }
+        
+        for (var shift_type in MODE_SHIFT){
+            if (data1 == MODE_SHIFT[shift_type] )   {
+                if (data2 != 0) { 
+                    println("Shift on: " + data1)
+                    println("Shift on: shift_type: " + shift_type )
+        
+                    active_shift[shift_type] = true }
+                else { 
+                    println("Shift off: " + data1)
+                    active_shift[shift_type] = false }
+            }         
+        } 
     } 
 
     if (data1 >= ((n * CC_NUM) + CC_ENCODER[0]) && data1 <= ((n * CC_NUM) + CC_ENCODER[7])) {
