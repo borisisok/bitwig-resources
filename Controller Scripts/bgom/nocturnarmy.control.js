@@ -32,13 +32,13 @@ const MODE_SHIFT =
     UNDEF_1: 125
 };
 
-var current_shift = {}
+var active_shift = {}
 
 
-current_shift[MODE_SHIFT.MAIN] = false
-current_shift[MODE_SHIFT.SOLO] = false
-current_shift[MODE_SHIFT.MUTE] = false
-current_shift[MODE_SHIFT.REC] = false
+active_shift[MODE_SHIFT.MAIN] = false
+active_shift[MODE_SHIFT.SOLO] = false
+active_shift[MODE_SHIFT.MUTE] = false
+active_shift[MODE_SHIFT.REC] = false
 
 
 
@@ -226,10 +226,10 @@ function onMidi(status, data1, data2) {
         println("YO night shift")
         if (data2 != 0) { 
             println("Shift on: " + data1)
-            current_shift[data1] = true }
+            active_shift[data1] = true }
         else { 
             println("Shift off: " + data1)
-            current_shift[data1] = false }
+            active_shift[data1] = false }
     } 
 
     if (data1 >= ((n * CC_NUM) + CC_ENCODER[0]) && data1 <= ((n * CC_NUM) + CC_ENCODER[7])) {
@@ -295,38 +295,38 @@ function onEncoder(nocturn_num, encoder_num, track_num, data1, data2) {
 function onButton(nocturn_num, botton_num, track_num, data1, data2) {
     //println("onButton: " + nocturn_num + " " + botton_num + " " + track_num + " " + data1 + " " + data2)
     if (nocturn_num == 0) {
-        if (current_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.MIXER) {
+        if (active_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.MIXER) {
             current_page = MODE_PAGE.MIXER
             setIndicationMixer()
             setButton(nocturn_num, botton_num, 127)
-        } else if (current_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.PAN) {
+        } else if (active_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.PAN) {
             current_page = MODE_PAGE.PAN
             setIndicationPan()
             setButton(nocturn_num, botton_num, 127)
-        } else if (current_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.VUMETER) {
+        } else if (active_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.VUMETER) {
             current_page = MODE_PAGE.VUMETER
             setIndicationOff()
             setButton(nocturn_num, botton_num, 127)
-        } else if (current_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.SEND_0) {
+        } else if (active_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.SEND_0) {
             current_page = MODE_PAGE.SEND_0
             setIndicationSend(0)
             setButton(nocturn_num, botton_num, 127)
-        } else if (current_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.SEND_1) {
+        } else if (active_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.SEND_1) {
             current_page = MODE_PAGE.SEND_1
             setIndicationSend(1)
             setButton(nocturn_num, botton_num, 127)
-        } else if (current_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.SEND_2) {
+        } else if (active_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.SEND_2) {
             current_page = MODE_PAGE.SEND_2
             setIndicationSend(2)
             setButton(nocturn_num, botton_num, 127)
-        } else if (current_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.SEND_3) {
+        } else if (active_shift[MODE_SHIFT.MAIN] && botton_num == MODE_PAGE.SEND_3) {
             current_page = MODE_PAGE.SEND_3
             setIndicationSend(3)
             setButton(nocturn_num, botton_num, 127)
         }
     }
 
-    if (current_shift[MODE_SHIFT.SOLO] ) {
+    if (active_shift[MODE_SHIFT.SOLO] ) {
         println("Solo....")
         track = trackBank.getTrack(track_num)
         if (track) {
@@ -334,7 +334,7 @@ function onButton(nocturn_num, botton_num, track_num, data1, data2) {
         }
         //setIndicationSolo(3)
         setButton(nocturn_num, botton_num, 127)
-    } else if (current_shift[MODE_SHIFT.MUTE] ) {
+    } else if (active_shift[MODE_SHIFT.MUTE] ) {
         println("Mute....")
         track = trackBank.getTrack(track_num)
         if (track) {
