@@ -10,6 +10,8 @@ host.defineController("bgom", "Automap army of MIDI Nocturns", "1.0", "DCA77860-
 host.defineMidiPorts(1, 1);
 host.addDeviceNameBasedDiscoveryPair(["Automap MIDI"], ["Automap MIDI"]);
 
+const NOCTURN_NUM = 4
+
 const MODE_PAGE =
 {
     MIXER: 0,
@@ -131,6 +133,8 @@ const CC_MIN = 0
 const CC_MAX = 16
 const CC_NUM = 17
 
+const SEND_NUM = 4
+const SCENE_NUM = 50
 
 var nocturns = [
     createState(),
@@ -195,7 +199,22 @@ function init() {
     host.getMidiInPort(0).setMidiCallback(onMidi);
     host.getMidiInPort(0).setSysexCallback(onSysex);
 
-    trackBank = host.createMainTrackBank(32, 4, 99);
+
+	cursorDevice = host.createCursorDeviceSection(8);
+	cursorTrack = host.createCursorTrackSection(0, 1);
+	// cursorClip = host.createCursorClipSection(16, 16);
+	groove = host.createGrooveSection();
+	masterTrack = host.createMasterTrackSection(0);
+	transport = host.createTransportSection();
+
+    trackBank = host.createMainTrackBank( (NOCTURN_NUM * 8), SEND_NUM, SCENE_NUM);
+
+    // page: the index of selected user defined device macro page
+
+	cursorDevice.addSelectedPageObserver(0, function(page)
+	{
+        println("SelectedPageObserver: page: " + page)
+    });
 
 
     /* TRACK BANK */
@@ -264,7 +283,8 @@ function flush() {
 
 
     if (has_active_shift()) {
-        if ( current_page < 8)
+        // avoid storing shift page as the prev page
+        if ( current_page < CC_BUTTON.length)
            prev_page = current_page
        println ("A: " +  current_page)
        current_page = MODE_PAGE[get_active_shift_type()]
