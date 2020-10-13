@@ -201,7 +201,8 @@ function init() {
 
 
 	cursorDevice = host.createCursorDeviceSection(8);
-	cursorTrack = host.createCursorTrackSection(0, 1);
+    cursorTrack = host.createCursorTrackSection(0, 1);
+    primaryInstrument = cursorTrack.getPrimaryInstrument();
 	// cursorClip = host.createCursorClipSection(16, 16);
 	groove = host.createGrooveSection();
 	masterTrack = host.createMasterTrackSection(0);
@@ -264,8 +265,50 @@ function init() {
             }));
 
         }
+        
     }
 
+    primaryInstrument = cursorTrack.getPrimaryInstrument();
+	for ( var p = 0; p < 8; p++)
+	{
+		var macro = primaryInstrument.getMacro(p).getAmount();
+		macro.addValueObserver(128, makeIndexedFunction(p, function(index, value)
+		{
+                println("macro.ValueObserver: index: " + index + " value: " + value)
+               set_enc_state(MODE_PAGE.DEVICE, index, value)
+		}));
+		// macro.addIsMappingObserver(getObserverIndexFunc(p, isMapping)); //TODO
+	}
+	for ( var p = 0; p < 8; p++)
+	{
+		var parameter = cursorDevice.getParameter(p);
+		parameter.addValueObserver(128, makeIndexedFunction(p, function(index, value)
+		{  
+            index = ( +index + 8 )
+            println("parameter.ValueObserver: index: " + index  + " value: " + value)
+            set_enc_state(MODE_PAGE.DEVICE, index, value)
+     }));
+	}
+	for ( var p = 0; p < 8; p++)
+	{
+		var common = cursorDevice.getCommonParameter(p);
+		common.addValueObserver(128, makeIndexedFunction(p, function(index, value)
+		{
+            index = ( +index + 16 )
+            println("common.ValueObserver: index: " + index  + " value: " + value)
+            set_enc_state(MODE_PAGE.DEVICE, index, value)
+		}));
+	}
+	for ( var p = 0; p < 8; p++)
+	{
+		var env = cursorDevice.getEnvelopeParameter(p);
+		env.addValueObserver(128, makeIndexedFunction(p, function(index, value)
+		{
+            index = ( +index + 24 )
+            println("env.ValueObserver: index: " + index  + " value: " + value)
+            set_enc_state(MODE_PAGE.DEVICE, index, value)
+		}));
+	}
 }
 
 function exit() {
@@ -413,6 +456,11 @@ function onButton(nocturn_num, botton_num, track_num, data1, data2) {
         } else if ( botton_num == MODE_PAGE.PAN) {
             current_page = MODE_PAGE.PAN
             setIndicationPan()
+            setButton(nocturn_num, botton_num, 127)
+        } else if ( botton_num == MODE_PAGE.DEVICE) {
+            current_page = MODE_PAGE.DEVICE
+            inst = cursorTrack.getPrimaryInstrument();
+            setIndicationOff()
             setButton(nocturn_num, botton_num, 127)
         } else if ( botton_num == MODE_PAGE.VUMETER) {
             current_page = MODE_PAGE.VUMETER
