@@ -57,10 +57,10 @@ function no_active_shift() {
 }
 
 function has_active_shift() {
-    println("has_active_shift ? ")
+    //println("has_active_shift ? ")
     for (var shift_type in MODE_SHIFT) {
         if (active_shift[shift_type]) {
-            println("has_active_shift yes " + shift_type)
+            //println("has_active_shift yes " + shift_type)
             return true
         }
     }
@@ -169,7 +169,7 @@ function createState() {
 }
 
 function createStateArrays() {
-    println("X : ")
+    //  println("X : ")
     var res = []
     for (x in MODE_PAGE) {
         res.push([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
@@ -211,6 +211,10 @@ function makeTwoIndexedFunction(index, index2, f) {
         f(+index, +index2, value);
     };
 }
+
+
+
+
 var trackBank
 
 function init() {
@@ -273,7 +277,7 @@ function init() {
         for (send_index = 0; send_index < sb.getSizeOfBank(); send_index++) {
             send = sb.getItemAt(send_index)
             send.addValueObserver(128, makeTwoIndexedFunction(t, send_index, function (track_num, send_num, value) {
-                println("send ValueObserver: t: " + track_num + " s: " + send_num + " val: " + value)
+                //   println("send ValueObserver: t: " + track_num + " s: " + send_num + " val: " + value)
 
                 set_enc_state(MODE_PAGE['SEND_' + send_num], track_num, value)
             }));
@@ -315,7 +319,37 @@ function init() {
             set_enc_state(MODE_PAGE.DEVICE, index, value)
         }));
     }
+
+    //   host.scheduleTask(blinkTimer, null, 2000);
+
 }
+
+var blink = false;
+
+function blinkTimer() {
+    blink = !blink;
+    println("Blink: " + blink)
+    host.scheduleTask(blinkTimer, null, 2000);
+}
+
+var blink = false;
+
+var isDelayed = false;
+
+function startDelay() {
+    if (isDelayed) {
+        return false
+    }
+    host.scheduleTask(delayTimer, null, 500);
+    isDelayed = true
+    return true
+}
+
+function delayTimer() {
+    isDelayed = false;
+    println("Removing delay! ")
+}
+
 
 function exit() {
 }
@@ -328,7 +362,7 @@ function pausecomp(millis) {
 }
 
 function flush() {
-    println("S: " + current_page)
+    // println("S: " + current_page)
 
 
     if (has_active_shift()) {
@@ -345,7 +379,7 @@ function flush() {
     }
 
     for (var i in nocturns) {
-        println("i: " + i)
+        //  println("i: " + i)
         // println ("state: " + nocturns[i]['states'][current_page] )
         for (var state in nocturns[i]['states'][current_page]) {
             val = nocturns[i]['states'][current_page][state]
@@ -393,6 +427,23 @@ function onMidi(status, data1, data2) {
     }
     else if (data1 == ((n * CC_NUM) + CC_FADER[0])) {
         println("YO I AM FADER")
+        if (data2 > 110) {
+            // only allow 1 change per second
+            if (startDelay()) {
+                // next preset
+                println("switching to next preset")
+                cursorTrack.getPrimaryInstrument().switchToNextPreset()
+            }
+        } else if (data2 < 24) {
+            // only allow 1 change per second
+            if (startDelay()) {
+                // prev preset
+                println("switching to prev preset")
+                cursorTrack.getPrimaryInstrument().switchToPreviousPreset()
+
+            }
+        }
+
     }
     else if (data1 >= ((n * CC_NUM) + CC_BUTTON[0]) && data1 <= ((n * CC_NUM) + CC_BUTTON[7])) {
         b = (data1 - (n * CC_NUM)) - CC_ENCODER.length
@@ -457,19 +508,19 @@ function onEncoder(nocturn_num, encoder_num, track_num, data1, data2) {
             sb.getItemAt(3).set(data2, 128);
         }
     }
- 
+
     if (current_page == MODE_PAGE.DEVICE) {
         track = trackBank.getTrack(track_num)
         if (nocturn_num == 0) {
-            cursorDevice.getMacro(encoder_num).getAmount().set(data2, 128);        
-         } else if (nocturn_num == 1) {
-            cursorDevice.getParameter(encoder_num).getAmount().set(data2, 128);        
-         } else if (nocturn_num == 2) {
-            cursorDevice.getCommonParameter(encoder_num).getAmount().set(data2, 128);        
-         } else if (nocturn_num == 3) {
-            cursorDevice.getEnvelopeParameter(encoder_num).getAmount().set(data2, 128);        
-         }
-         
+            cursorDevice.getMacro(encoder_num).getAmount().set(data2, 128);
+        } else if (nocturn_num == 1) {
+            cursorDevice.getParameter(encoder_num).getAmount().set(data2, 128);
+        } else if (nocturn_num == 2) {
+            cursorDevice.getCommonParameter(encoder_num).getAmount().set(data2, 128);
+        } else if (nocturn_num == 3) {
+            cursorDevice.getEnvelopeParameter(encoder_num).getAmount().set(data2, 128);
+        }
+
     }
 
 }
