@@ -41,15 +41,15 @@ const MODE_SHIFT =
 var active_shift = {}
 
 // init shift array
-for ( var shift_type in MODE_SHIFT){
+for (var shift_type in MODE_SHIFT) {
     println("shift_type: " + shift_type)
     active_shift[shift_type] = false
 }
 
 
 function no_active_shift() {
-    for ( var shift_type in MODE_SHIFT){
-        if (active_shift[shift_type]){
+    for (var shift_type in MODE_SHIFT) {
+        if (active_shift[shift_type]) {
             return false
         }
     }
@@ -58,31 +58,49 @@ function no_active_shift() {
 
 function has_active_shift() {
     println("has_active_shift ? ")
-    for ( var shift_type in MODE_SHIFT){
-        if (active_shift[shift_type]){
+    for (var shift_type in MODE_SHIFT) {
+        if (active_shift[shift_type]) {
             println("has_active_shift yes " + shift_type)
-
             return true
         }
     }
-    
     return false
 }
 
 function get_active_shift() {
-    for ( var shift_type in MODE_SHIFT){
-        if (active_shift[shift_type]){
+    for (var shift_type in MODE_SHIFT) {
+        if (active_shift[shift_type]) {
             return MODE_SHIFT[shift_type]
         }
     }
 }
 
+function get_active_shifts() {
+    result = []
+    for (var shift_type in MODE_SHIFT) {
+        if (active_shift[shift_type]) {
+            result.push(MODE_SHIFT[shift_type])
+        }
+    }
+    return result
+}
+
 function get_active_shift_type() {
-    for ( var shift_type in MODE_SHIFT){
-        if (active_shift[shift_type]){
+    for (var shift_type in MODE_SHIFT) {
+        if (active_shift[shift_type]) {
             return shift_type
         }
     }
+}
+
+function get_active_shift_types() {
+    result = []
+    for (var shift_type in MODE_SHIFT) {
+        if (active_shift[shift_type]) {
+            result.push(shift_type)
+        }
+    }
+    return result
 }
 
 
@@ -151,8 +169,8 @@ function createState() {
 }
 
 function createStateArrays() {
-    println("X : " )
-    var res = []    
+    println("X : ")
+    var res = []
     for (x in MODE_PAGE) {
         res.push([0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])
     }
@@ -183,8 +201,8 @@ function get_enc_state(mode, index) {
 function set_enc_state(mode, index, value) {
     n = get_noc_num(index)
     cc = get_noc_cc(n, index)
-    println("set_enc_state() mode: " + mode + " index: " + index + " value: " + value)
-    println("set_enc_state() n: " + n + " cc: " + cc)
+    //println("set_enc_state() mode: " + mode + " index: " + index + " value: " + value)
+    //println("set_enc_state() n: " + n + " cc: " + cc)
     nocturns[n]['states'][mode][cc] = value
 }
 
@@ -200,20 +218,19 @@ function init() {
     host.getMidiInPort(0).setSysexCallback(onSysex);
 
 
-	cursorDevice = host.createCursorDeviceSection(8);
+    cursorDevice = host.createCursorDeviceSection(8);
     cursorTrack = host.createCursorTrackSection(0, 1);
     primaryInstrument = cursorTrack.getPrimaryInstrument();
-	// cursorClip = host.createCursorClipSection(16, 16);
-	groove = host.createGrooveSection();
-	masterTrack = host.createMasterTrackSection(0);
-	transport = host.createTransportSection();
+    // cursorClip = host.createCursorClipSection(16, 16);
+    groove = host.createGrooveSection();
+    masterTrack = host.createMasterTrackSection(0);
+    transport = host.createTransportSection();
 
-    trackBank = host.createMainTrackBank( (NOCTURN_NUM * 8), SEND_NUM, SCENE_NUM);
+    trackBank = host.createMainTrackBank((NOCTURN_NUM * 8), SEND_NUM, SCENE_NUM);
 
     // page: the index of selected user defined device macro page
 
-	cursorDevice.addSelectedPageObserver(0, function(page)
-	{
+    cursorDevice.addSelectedPageObserver(0, function (page) {
         println("SelectedPageObserver: page: " + page)
     });
 
@@ -235,25 +252,22 @@ function init() {
             set_enc_state(MODE_PAGE.PAN, index, value)
         }));
 
-		track.getSolo().addValueObserver(makeIndexedFunction(t, function(index, on)
-		{
+        track.getSolo().addValueObserver(makeIndexedFunction(t, function (index, on) {
             println("SOLO")
             set_enc_state(MODE_PAGE.SOLO, index, on ? 127 : 0)
         }));
 
-        track.getMute().addValueObserver(makeIndexedFunction(t, function(index, on)
-		{
+        track.getMute().addValueObserver(makeIndexedFunction(t, function (index, on) {
             println("MUTE")
             set_enc_state(MODE_PAGE.MUTE, index, on ? 127 : 0)
         }));
 
-        track.getArm().addValueObserver(makeIndexedFunction(t, function(index, on)
-		{
+        track.getArm().addValueObserver(makeIndexedFunction(t, function (index, on) {
             println("ARM")
             set_enc_state(MODE_PAGE.ARM, index, on ? 127 : 0)
         }));
 
-        
+
         sb = track.sendBank()
         println("sendBank: getSizeOfBank: " + sb.getSizeOfBank());
         for (send_index = 0; send_index < sb.getSizeOfBank(); send_index++) {
@@ -265,50 +279,42 @@ function init() {
             }));
 
         }
-        
+
     }
 
     primaryInstrument = cursorTrack.getPrimaryInstrument();
-	for ( var p = 0; p < 8; p++)
-	{
-		var macro = primaryInstrument.getMacro(p).getAmount();
-		macro.addValueObserver(128, makeIndexedFunction(p, function(index, value)
-		{
-                println("macro.ValueObserver: index: " + index + " value: " + value)
-               set_enc_state(MODE_PAGE.DEVICE, index, value)
-		}));
-		// macro.addIsMappingObserver(getObserverIndexFunc(p, isMapping)); //TODO
-	}
-	for ( var p = 0; p < 8; p++)
-	{
-		var parameter = cursorDevice.getParameter(p);
-		parameter.addValueObserver(128, makeIndexedFunction(p, function(index, value)
-		{  
-            index = ( +index + 8 )
-            println("parameter.ValueObserver: index: " + index  + " value: " + value)
+    for (var p = 0; p < 8; p++) {
+        var macro = primaryInstrument.getMacro(p).getAmount();
+        macro.addValueObserver(128, makeIndexedFunction(p, function (index, value) {
+            println("macro.ValueObserver: index: " + index + " value: " + value)
             set_enc_state(MODE_PAGE.DEVICE, index, value)
-     }));
-	}
-	for ( var p = 0; p < 8; p++)
-	{
-		var common = cursorDevice.getCommonParameter(p);
-		common.addValueObserver(128, makeIndexedFunction(p, function(index, value)
-		{
-            index = ( +index + 16 )
-            println("common.ValueObserver: index: " + index  + " value: " + value)
+        }));
+        // macro.addIsMappingObserver(getObserverIndexFunc(p, isMapping)); //TODO
+    }
+    for (var p = 0; p < 8; p++) {
+        var parameter = cursorDevice.getParameter(p);
+        parameter.addValueObserver(128, makeIndexedFunction(p, function (index, value) {
+            index = (+index + 8)
+            println("parameter.ValueObserver: index: " + index + " value: " + value)
             set_enc_state(MODE_PAGE.DEVICE, index, value)
-		}));
-	}
-	for ( var p = 0; p < 8; p++)
-	{
-		var env = cursorDevice.getEnvelopeParameter(p);
-		env.addValueObserver(128, makeIndexedFunction(p, function(index, value)
-		{
-            index = ( +index + 24 )
-            println("env.ValueObserver: index: " + index  + " value: " + value)
+        }));
+    }
+    for (var p = 0; p < 8; p++) {
+        var common = cursorDevice.getCommonParameter(p);
+        common.addValueObserver(128, makeIndexedFunction(p, function (index, value) {
+            index = (+index + 16)
+            println("common.ValueObserver: index: " + index + " value: " + value)
             set_enc_state(MODE_PAGE.DEVICE, index, value)
-		}));
-	}
+        }));
+    }
+    for (var p = 0; p < 8; p++) {
+        var env = cursorDevice.getEnvelopeParameter(p);
+        env.addValueObserver(128, makeIndexedFunction(p, function (index, value) {
+            index = (+index + 24)
+            println("env.ValueObserver: index: " + index + " value: " + value)
+            set_enc_state(MODE_PAGE.DEVICE, index, value)
+        }));
+    }
 }
 
 function exit() {
@@ -322,24 +328,24 @@ function pausecomp(millis) {
 }
 
 function flush() {
-    println ("S: " +  current_page)
+    println("S: " + current_page)
 
 
     if (has_active_shift()) {
         // avoid storing shift page as the prev page
-        if ( current_page < CC_BUTTON.length)
-           prev_page = current_page
-       println ("A: " +  current_page)
-       current_page = MODE_PAGE[get_active_shift_type()]
-       println ("A mod: " +  current_page)
+        if (current_page < CC_BUTTON.length)
+            prev_page = current_page
+        println("A: " + current_page)
+        current_page = MODE_PAGE[get_active_shift_type()]
+        println("A mod: " + current_page)
     } else if (prev_page != false) {
-       current_page = prev_page
-       println ("B: " + prev_page)
-       prev_page = false
+        current_page = prev_page
+        println("B: " + prev_page)
+        prev_page = false
     }
 
     for (var i in nocturns) {
-         println ("i: " + i)
+        println("i: " + i)
         // println ("state: " + nocturns[i]['states'][current_page] )
         for (var state in nocturns[i]['states'][current_page]) {
             val = nocturns[i]['states'][current_page][state]
@@ -362,20 +368,22 @@ function onMidi(status, data1, data2) {
     if ((data1 >= CC_SHIFT_BUTTON[0]) && (data1 <= CC_SHIFT_BUTTON[5])) {
         // shift button detection
         println("YO night shift")
-        
-        for (var shift_type in MODE_SHIFT){
-            if (data1 == MODE_SHIFT[shift_type] )   {
-                if (data2 != 0) { 
+
+        for (var shift_type in MODE_SHIFT) {
+            if (data1 == MODE_SHIFT[shift_type]) {
+                if (data2 != 0) {
                     println("Shift on: " + data1)
-                    println("Shift on: shift_type: " + shift_type )
-        
-                    active_shift[shift_type] = true }
-                else { 
+                    println("Shift on: shift_type: " + shift_type)
+
+                    active_shift[shift_type] = true
+                }
+                else {
                     println("Shift off: " + data1)
-                    active_shift[shift_type] = false }
-            }         
-        } 
-    } 
+                    active_shift[shift_type] = false
+                }
+            }
+        }
+    }
 
     if (data1 >= ((n * CC_NUM) + CC_ENCODER[0]) && data1 <= ((n * CC_NUM) + CC_ENCODER[7])) {
         e = data1 - (n * CC_NUM)
@@ -391,8 +399,8 @@ function onMidi(status, data1, data2) {
         t = (b + (n * CC_BUTTON.length))
         //println("YO I AM BUTTON")
         onButton(n, b, t, data1, data2)
-    } 
-    
+    }
+
     /*
     else if (has_active_shift) {
         prev_page = current_page
@@ -411,6 +419,12 @@ function onEncoder(nocturn_num, encoder_num, track_num, data1, data2) {
         if (track) {
             track.getVolume().setIndication(true)
             track.getVolume().set(data2, 128)
+        }
+    } else if (current_page == MODE_PAGE.DEVICE) {
+        track = trackBank.getTrack(track_num)
+        if (track) {
+            //track.getPan().setIndication(true)
+            track.getPan().set(data2, 128);
         }
     } else if (current_page == MODE_PAGE.PAN) {
         track = trackBank.getTrack(track_num)
@@ -443,49 +457,63 @@ function onEncoder(nocturn_num, encoder_num, track_num, data1, data2) {
             sb.getItemAt(3).set(data2, 128);
         }
     }
+ 
+    if (current_page == MODE_PAGE.DEVICE) {
+        track = trackBank.getTrack(track_num)
+        if (nocturn_num == 0) {
+            cursorDevice.getMacro(encoder_num).getAmount().set(data2, 128);        
+         } else if (nocturn_num == 1) {
+            cursorDevice.getParameter(encoder_num).getAmount().set(data2, 128);        
+         } else if (nocturn_num == 2) {
+            cursorDevice.getCommonParameter(encoder_num).getAmount().set(data2, 128);        
+         } else if (nocturn_num == 3) {
+            cursorDevice.getEnvelopeParameter(encoder_num).getAmount().set(data2, 128);        
+         }
+         
+    }
 
 }
 
 function onButton(nocturn_num, botton_num, track_num, data1, data2) {
     //println("onButton: " + nocturn_num + " " + botton_num + " " + track_num + " " + data1 + " " + data2)
     if (nocturn_num == 0 && no_active_shift()) {
-        if ( botton_num == MODE_PAGE.MIXER) {
+        if (botton_num == MODE_PAGE.MIXER) {
             current_page = MODE_PAGE.MIXER
             setIndicationMixer()
             setButton(nocturn_num, botton_num, 127)
-        } else if ( botton_num == MODE_PAGE.PAN) {
+        } else if (botton_num == MODE_PAGE.PAN) {
             current_page = MODE_PAGE.PAN
             setIndicationPan()
             setButton(nocturn_num, botton_num, 127)
-        } else if ( botton_num == MODE_PAGE.DEVICE) {
+        } else if (botton_num == MODE_PAGE.DEVICE) {
             current_page = MODE_PAGE.DEVICE
             inst = cursorTrack.getPrimaryInstrument();
             setIndicationOff()
             setButton(nocturn_num, botton_num, 127)
-        } else if ( botton_num == MODE_PAGE.VUMETER) {
+        } else if (botton_num == MODE_PAGE.VUMETER) {
             current_page = MODE_PAGE.VUMETER
             setIndicationOff()
             setButton(nocturn_num, botton_num, 127)
-        } else if ( botton_num == MODE_PAGE.SEND_0) {
+        } else if (botton_num == MODE_PAGE.SEND_0) {
             current_page = MODE_PAGE.SEND_0
             setIndicationSend(0)
             setButton(nocturn_num, botton_num, 127)
-        } else if ( botton_num == MODE_PAGE.SEND_1) {
+        } else if (botton_num == MODE_PAGE.SEND_1) {
             current_page = MODE_PAGE.SEND_1
             setIndicationSend(1)
             setButton(nocturn_num, botton_num, 127)
-        } else if ( botton_num == MODE_PAGE.SEND_2) {
+        } else if (botton_num == MODE_PAGE.SEND_2) {
             current_page = MODE_PAGE.SEND_2
             setIndicationSend(2)
             setButton(nocturn_num, botton_num, 127)
-        } else if ( botton_num == MODE_PAGE.SEND_3) {
+        } else if (botton_num == MODE_PAGE.SEND_3) {
             current_page = MODE_PAGE.SEND_3
             setIndicationSend(3)
             setButton(nocturn_num, botton_num, 127)
         }
     }
-    
-    if (active_shift['SOLO'] ) {
+
+    if (active_shift['SOLO']) {
         println("Solo....")
         track = trackBank.getTrack(track_num)
         if (track) {
@@ -493,7 +521,7 @@ function onButton(nocturn_num, botton_num, track_num, data1, data2) {
         }
         //setIndicationSolo(3)
         // setButton(nocturn_num, botton_num, 127)
-    } else if (active_shift['MUTE'] ) {
+    } else if (active_shift['MUTE']) {
         println("Mute....")
         track = trackBank.getTrack(track_num)
         if (track) {
@@ -501,7 +529,7 @@ function onButton(nocturn_num, botton_num, track_num, data1, data2) {
         }
         //setIndicationMute(3)
         //setButton(nocturn_num, botton_num, 127)
-    } else if (active_shift['ARM'] ) {
+    } else if (active_shift['ARM']) {
         println("Arm....")
         track = trackBank.getTrack(track_num)
         if (track) {
