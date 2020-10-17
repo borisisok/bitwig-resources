@@ -1,10 +1,10 @@
 /* Workdir:
- * cd /cygdrive/c/Users/gomol/Documents/Bitwig\ Studio/Controller\ Scripts/bgom/
+ *   cd /cygdrive/c/Users/gomol/Documents/Bitwig\ Studio/Controller\ Scripts/bgom/
  * Docs: 
- * file:///C:/Program%20Files/Bitwig%20Studio/3.2.8/resources/doc/control-surface/scripting-guide.pdf
- * file:///C:/Program%20Files/Bitwig%20Studio/3.2.8/resources/doc/control-surface/api/annotated.html
+ *   file:///C:/Program%20Files/Bitwig%20Studio/3.2.8/resources/doc/control-surface/scripting-guide.pdf
+ *   file:///C:/Program%20Files/Bitwig%20Studio/3.2.8/resources/doc/control-surface/api/annotated.html
  */
-loadAPI(1);
+loadAPI(1)
 
 host.defineController("bgom", "Automap army of MIDI Nocturns", "1.0", "DCA77860-FDCC-11EA-8B6E-0800200C9A66");
 host.defineMidiPorts(1, 1);
