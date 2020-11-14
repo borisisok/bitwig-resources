@@ -1,5 +1,6 @@
 /* Workdir:
  *   cd /cygdrive/c/Users/gomol/Documents/Bitwig\ Studio/Controller\ Scripts/bgom/
+     cd /cygdrive/c/Program\ Files/Bitwig\ Studio/3.2.8/resources/ControllerScripts
  * Docs: 
  *   file:///C:/Program%20Files/Bitwig%20Studio/3.2.8/resources/doc/control-surface/scripting-guide.pdf
  *   file:///C:/Program%20Files/Bitwig%20Studio/3.2.8/resources/doc/control-surface/api/annotated.html
@@ -32,7 +33,7 @@ const MODE_SHIFT =
     SOLO: 120,
     MUTE: 121,
     ARM: 122,
-    UNDEF_0: 123,
+    RESET: 123,
     UNDEF_1: 124,
     UNDEF_2: 125
 };
@@ -213,7 +214,14 @@ function makeTwoIndexedFunction(index, index2, f) {
 }
 
 
-
+function dump(obj)
+{
+   println(obj);
+   for(var key in obj)
+   {
+      println("Dump: " +  key);
+   }
+}
 
 var trackBank
 
@@ -239,51 +247,62 @@ function init() {
     });
 
 
+    scantracks = true;
+    //t = 0;
     /* TRACK BANK */
-    for (var t = 0; t < 32; t++) {
+    //while (scantracks) {
+        for (var t = 0; t < 32; t++) {
         var track = trackBank.getTrack(t);
+        
+        println("XTrack is : " + dump(track));
+        //if (track.isGroup()) {
+        //    println("XTrack is grouptrack: " + t);
+        //} //else {
 
-        track.addVuMeterObserver(128, -1, true, makeIndexedFunction(t, function (index, value) {
-            set_enc_state(MODE_PAGE.VUMETER, index, value)
-        }));
-
-        track.getVolume().addValueObserver(128, makeIndexedFunction(t, function (index, value) {
-            println("Volume: track: " + index + " value: " + value);
-            set_enc_state(MODE_PAGE.MIXER, index, value)
-        }));
-
-        track.getPan().addValueObserver(128, makeIndexedFunction(t, function (index, value) {
-            set_enc_state(MODE_PAGE.PAN, index, value)
-        }));
-
-        track.getSolo().addValueObserver(makeIndexedFunction(t, function (index, on) {
-            println("SOLO")
-            set_enc_state(MODE_PAGE.SOLO, index, on ? 127 : 0)
-        }));
-
-        track.getMute().addValueObserver(makeIndexedFunction(t, function (index, on) {
-            println("MUTE")
-            set_enc_state(MODE_PAGE.MUTE, index, on ? 127 : 0)
-        }));
-
-        track.getArm().addValueObserver(makeIndexedFunction(t, function (index, on) {
-            println("ARM")
-            set_enc_state(MODE_PAGE.ARM, index, on ? 127 : 0)
-        }));
-
-
-        sb = track.sendBank()
-        println("sendBank: getSizeOfBank: " + sb.getSizeOfBank());
-        for (send_index = 0; send_index < sb.getSizeOfBank(); send_index++) {
-            send = sb.getItemAt(send_index)
-            send.addValueObserver(128, makeTwoIndexedFunction(t, send_index, function (track_num, send_num, value) {
-                //   println("send ValueObserver: t: " + track_num + " s: " + send_num + " val: " + value)
-
-                set_enc_state(MODE_PAGE['SEND_' + send_num], track_num, value)
+            track.addVuMeterObserver(128, -1, true, makeIndexedFunction(t, function (index, value) {
+                set_enc_state(MODE_PAGE.VUMETER, index, value)
             }));
 
-        }
+            track.getVolume().addValueObserver(128, makeIndexedFunction(t, function (index, value) {
+                println("Volume: track: " + index + " value: " + value);
+                set_enc_state(MODE_PAGE.MIXER, index, value)
+            }));
 
+            track.getPan().addValueObserver(128, makeIndexedFunction(t, function (index, value) {
+                set_enc_state(MODE_PAGE.PAN, index, value)
+            }));
+
+            track.getSolo().addValueObserver(makeIndexedFunction(t, function (index, on) {
+                println("SOLO")
+                set_enc_state(MODE_PAGE.SOLO, index, on ? 127 : 0)
+            }));
+
+            track.getMute().addValueObserver(makeIndexedFunction(t, function (index, on) {
+                println("MUTE")
+                set_enc_state(MODE_PAGE.MUTE, index, on ? 127 : 0)
+            }));
+
+            track.getArm().addValueObserver(makeIndexedFunction(t, function (index, on) {
+                println("ARM")
+                set_enc_state(MODE_PAGE.ARM, index, on ? 127 : 0)
+            }));
+
+
+            sb = track.sendBank()
+            println("sendBank: getSizeOfBank: " + sb.getSizeOfBank());
+            for (send_index = 0; send_index < sb.getSizeOfBank(); send_index++) {
+                send = sb.getItemAt(send_index)
+                send.addValueObserver(128, makeTwoIndexedFunction(t, send_index, function (track_num, send_num, value) {
+                    //   println("send ValueObserver: t: " + track_num + " s: " + send_num + " val: " + value)
+
+                    set_enc_state(MODE_PAGE['SEND_' + send_num], track_num, value)
+                }));
+
+            }
+
+            
+       // }
+      //  t++
     }
 
     primaryInstrument = cursorTrack.getPrimaryInstrument();
@@ -585,6 +604,15 @@ function onButton(nocturn_num, botton_num, track_num, data1, data2) {
         track = trackBank.getTrack(track_num)
         if (track) {
             track.getArm().toggle();
+        }
+        //setIndicationMute(3)
+        //setButton(nocturn_num, botton_num, 127)
+    } else if (active_shift['RESET']) {
+        println("Reset....")
+        track = trackBank.getTrack(track_num)
+        if (track) {
+            track.getVolume().set(794, 1000)
+            track.getPan().set(64, 128);
         }
         //setIndicationMute(3)
         //setButton(nocturn_num, botton_num, 127)
